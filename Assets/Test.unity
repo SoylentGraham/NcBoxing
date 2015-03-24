@@ -253,14 +253,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mWebcamTextureManager: {fileID: 877451875}
-  mLumTexture: {fileID: 0}
+  mLumTexture: {fileID: 8400000, guid: 31049fa401f72444d8106e679ba55173, type: 2}
   mLumTextureLast: {fileID: 0}
-  mMotionTexture: {fileID: 0}
-  mLumBlockWidth: 16
-  mLumBlockHeight: 16
+  mMotionTexture: {fileID: 8400000, guid: 11dbfd53590cc450896a56c3fc87b533, type: 2}
   mVideoToLumShader: {fileID: 4800000, guid: 079fd334045934180b4004bf7e54655a, type: 3}
-  mVideoToLumMaterial: {fileID: 0}
-  mLumToMotionShader: {fileID: 0}
+  mLumToMotionShader: {fileID: 4800000, guid: 32b7d3e31a7304be2bce14881f099c9e, type: 3}
   mMotionInitShader: {fileID: 4800000, guid: 5560bda7bc4d1423e8ed3b81a344fedf, type: 3}
 --- !u!4 &2034646913
 Transform:

@@ -21,6 +21,7 @@ public class WebcamTextureManager : MonoBehaviour {
 
 	void OnDisable()
 	{
+		mTextureOutput.Stop ();
 		mTextureOutput = null;
 	}
 }
