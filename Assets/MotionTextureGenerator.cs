@@ -13,7 +13,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 
 
 	public Shader mVideoToLumShader;
-	public Shader mLumToMotionShader;
+	public Material LumToMotionMaterial;
 	public Shader mMotionInitShader;
 
 	// Use this for initialization
@@ -52,16 +52,18 @@ public class MotionTextureGenerator : MonoBehaviour {
 		if (!mMotionTexture)
 			return false;
 
+		if (!LumToMotionMaterial)
+			return false;
+
 		if (!LumTexturePrev) {
 			//	run init motion texture shader
 			Graphics.Blit (LumTextureNew, mMotionTexture, new Material(mMotionInitShader) );
 		}
 		else{
-			Material MotionCalcMat = new Material( mLumToMotionShader );
-			MotionCalcMat.SetTexture("LumLastTex", mLumTextureLast );
+			LumToMotionMaterial.SetTexture("LumLastTex", mLumTextureLast );
 
 			//	run normal motion generator
-			Graphics.Blit (LumTextureNew, mMotionTexture, MotionCalcMat );
+			Graphics.Blit (LumTextureNew, mMotionTexture, LumToMotionMaterial );
 		}
 
 		return true;
