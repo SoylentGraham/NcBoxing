@@ -52,18 +52,18 @@ public class MotionTextureGenerator : MonoBehaviour {
 		if (!mMotionTexture)
 			return false;
 
-		Graphics.Blit (LumTextureNew, mMotionTexture, new Material(mMotionInitShader) );
-
-		/*
 		if (!LumTexturePrev) {
 			//	run init motion texture shader
-			mTextureProcessor.RenderTextureWithShader (LumTextureNew, mMotionTexture, mMotionInitShader );
+			Graphics.Blit (LumTextureNew, mMotionTexture, new Material(mMotionInitShader) );
 		}
 		else{
+			Material MotionCalcMat = new Material( mLumToMotionShader );
+			MotionCalcMat.SetTexture("LumLastTex", mLumTextureLast );
+
 			//	run normal motion generator
-			mTextureProcessor.RenderTextureWithShader (LumTextureNew, mMotionTexture, mLumToMotionShader );
+			Graphics.Blit (LumTextureNew, mMotionTexture, MotionCalcMat );
 		}
-		*/
+
 		return true;
 	}
 
@@ -72,14 +72,18 @@ public class MotionTextureGenerator : MonoBehaviour {
 
 		if (mWebcamTextureManager == null)
 			return;
-	
+
 		Texture VideoTexture = mWebcamTextureManager.mTextureOutput;
 
 		if (!ExecuteShaderVideoToLum (VideoTexture))
 			return;
-
+	
 		if ( !ExecuteShaderLumToMotion( mLumTexture, mLumTextureLast ) )
 			return;
 
+		if (!mLumTextureLast) {
+			mLumTextureLast = new RenderTexture (mLumTexture.width, mLumTexture.height, mLumTexture.depth, mLumTexture.format, RenderTextureReadWrite.Default);
+		}
+		Graphics.Blit (mLumTexture, mLumTextureLast);
 	}
 }

@@ -1,7 +1,5 @@
-﻿Shader "Rewind/MotionCalc" {
+﻿Shader "Rewind/MotionInit" {
 	Properties {
-		_MainTex ("_MainTex", 2D) = "white" {}
-		LumLastTex ("LumLastTex", 2D) = "white" {}
 	}
 	SubShader {
 	 Pass {
@@ -22,7 +20,6 @@
 
 
 			sampler2D _MainTex;
-			sampler2D LumLastTex;
 			
 
 			FragInput vert(VertexInput In) {
@@ -33,13 +30,8 @@
 			}
 
 			float4 frag(FragInput In) : SV_Target {
-				float LumLast = tex2D( LumLastTex, In.uv_MainTex ).r;
-				float LumNew = tex2D( _MainTex, In.uv_MainTex ).r;
 				
-				float Tolerance = 0.02f;
-				if ( abs(LumLast-LumNew) > Tolerance )
-					return float4( 1,1,1,1 );
-				return float4( 0,0,0,1 );
+				return float4( tex2D( _MainTex, In.uv_MainTex ).rgb, 1.0 );
 			}
 
 		ENDCG
