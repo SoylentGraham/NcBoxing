@@ -4,6 +4,7 @@ using System.Collections;
 public class WebcamTextureManager : MonoBehaviour {
 
 	public WebCamTexture mTextureOutput = null;
+	public string DeviceName = "";
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +15,20 @@ public class WebcamTextureManager : MonoBehaviour {
 	void Update () {
 	
 		if (!mTextureOutput) {
-			mTextureOutput = new WebCamTexture ();
+
+			if ( DeviceName.Length > 0 )
+			{
+				mTextureOutput = new WebCamTexture (DeviceName);
+			}
+			else
+			{
+				string debug = "using default webcam device. Options: ";
+				foreach( WebCamDevice w in WebCamTexture.devices )
+					debug += "\n" + w.name;
+				Debug.Log(debug);
+				mTextureOutput = new WebCamTexture ();
+			}
+
 			mTextureOutput.Play ();
 		}
 	}
