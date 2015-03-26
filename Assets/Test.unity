@@ -209,6 +209,7 @@ MonoBehaviour:
     type: 3}
   BackgroundJustScoreShader: {fileID: 4800000, guid: 84d9ce86099e147bf96730fa3f590e13,
     type: 3}
+  SubtractShader: {fileID: 4800000, guid: 108589f39ea524e039a45c2ed6266839, type: 3}
 --- !u!81 &1889544385
 AudioListener:
   m_ObjectHideFlags: 0

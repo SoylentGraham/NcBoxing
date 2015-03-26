@@ -28,14 +28,21 @@ public class DebugGui : MonoBehaviour {
 		if ( mBackgroundLearner != null )
 			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustScoreShader, ref mJustScoreTexture );
 		
-		if ( mBackgroundLearner != null && mWebcamTextureManager != null )
-			UpdateSubtractTexture( mWebcamTextureManager.mTextureOutput, mBackgroundLearner.mBackgroundTexture, SubtractShader, ref mSubtractTexture );
+		if (mBackgroundLearner != null && mWebcamTextureManager != null) {
+			//Texture LiveTexture = mWebcamTextureManager.mTextureOutput;
+			Texture LiveTexture = mMotionTextureGenerator.mLumTexture;
+			UpdateSubtractTexture (LiveTexture, mBackgroundLearner.mBackgroundTexture, SubtractShader, ref mSubtractTexture);
+		}
 	}
+
 	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,Shader shader,ref RenderTexture TempTexture)
 	{
 		if (shader == null)
 			return;
-		
+		if (LiveTexture == null)
+			return;
+		if (BackgroundTexture == null)
+			return;
 		if (TempTexture == null)
 			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, RenderTextureFormat.ARGBFloat);
 

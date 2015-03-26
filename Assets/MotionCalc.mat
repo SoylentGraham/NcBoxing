@@ -139,6 +139,14 @@ Material:
         second: 0
       data:
         first:
+          name: TextureWidth
+        second: 128
+      data:
+        first:
+          name: TextureHeight
+        second: 128
+      data:
+        first:
           name: DiffTolerance
         second: .00999999978
       data:
@@ -149,14 +157,6 @@ Material:
         first:
           name: DiffRadius
         second: 8
-      data:
-        first:
-          name: TextureWidth
-        second: 128
-      data:
-        first:
-          name: TextureHeight
-        second: 128
     m_Colors:
       data:
         first:

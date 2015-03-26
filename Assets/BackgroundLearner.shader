@@ -2,9 +2,7 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		LastBackgroundTex ("LastBackgroundTex", 2D) = "white" {}
-		AgeMax	("AgeMax", Int ) = 1000
 		Init	("Init", Int ) = 1
-		LumDiffMax	("LumDiffMax", Float ) = 0.99
 	}
 	SubShader {
 	
@@ -26,10 +24,13 @@
 			};
 
 			int Init;
-			int AgeMax;
-			float LumDiffMax;
 			sampler2D _MainTex;	//	new lum
 			sampler2D LastBackgroundTex;
+			const int AgeMax = 20;
+			const float LumDiffMax = 0.20;
+			const float NewLumInfluence = 1.0f;
+			const bool SquareScore = true;
+			const bool AgeSlowly = true;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -64,7 +65,9 @@
 			float4 InitLumTruthAge(FragInput In)
 			{
 				float NewLum = tex2D( _MainTex, In.uv_MainTex );
-				return MakeLumTruthAge( NewLum, 1.0/(float)AgeMax, 1 );
+				int Age = 1;
+				float FrameDelta = 1.0f / (AgeSlowly ? (float)AgeMax : (float)Age);
+				return MakeLumTruthAge( NewLum, FrameDelta, Age );
 			}
 			
 			float4 UpdateLumTruthAge(FragInput In)
@@ -74,32 +77,35 @@
 
 
 				//	get score of this lum
-				float LumDiff = abs(NewLumSample - OldLumTruthAge.x);
+				float OldLum = OldLumTruthAge.x;
+				float LumDiff = abs(NewLumSample - OldLum);
 				float LumScore = 1.0f - ( clamp( LumDiff / LumDiffMax, 0, 1 ) );
+				if ( SquareScore )
+					LumScore *= LumScore;
 				bool BadLum = (LumDiff / LumDiffMax) >= 1.0f;
 				
 				float OldTruth = OldLumTruthAge.y;
 				float NewTruth = OldTruth;
 				
 				//	use agemax for slow build up, use .z for very fast learn
-				float FrameDelta = 1.0f / (float)AgeMax;
-				//float FrameDelta = 1.0f / (float)OldLumTruthAge.z;
+				int Age = max(1,OldLumTruthAge.z);
+				float FrameDelta = 1.0f / (AgeSlowly ? (float)AgeMax : (float)Age);
 				
 				//	if lum score is bad, we want to decrease the truth ("this pixel is noisy")
 				if ( BadLum )
 				{
+					//	lose score fast
 					NewTruth -= FrameDelta;
 				}
 				else
 				{
+					//	gain score slower (using squared score)
 					NewTruth += LumScore * FrameDelta;
 				}
-												
-				float NewLumInfluence = 5.0f;
+
 				float NewWeight = LumScore * (FrameDelta*NewLumInfluence) * (1.0 - NewTruth);
 				float OldWeight = 1.0f - NewWeight;
 				
-				float OldLum = OldLumTruthAge.x;
 				float NewLum = (NewLumSample*NewWeight) + (OldLum*OldWeight);
 								
 				int NewAge = OldLumTruthAge.z + 1;

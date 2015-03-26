@@ -154,7 +154,7 @@ Material:
       data:
         first:
           name: AgeMax
-        second: 100
+        second: 1000
       data:
         first:
           name: Init
@@ -162,7 +162,15 @@ Material:
       data:
         first:
           name: LumDiffMax
-        second: .100000001
+        second: .400000006
+      data:
+        first:
+          name: LumDiffDegrade
+        second: .200000003
+      data:
+        first:
+          name: LumDiffIgnore
+        second: .5
     m_Colors:
       data:
         first:
