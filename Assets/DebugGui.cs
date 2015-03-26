@@ -10,6 +10,8 @@ public class DebugGui : MonoBehaviour {
 	public Shader BackgroundJustScoreShader;
 	private RenderTexture		mJustLumTexture;
 	private RenderTexture		mJustScoreTexture;
+	private RenderTexture		mSubtractTexture;
+	public Shader	SubtractShader;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +27,21 @@ public class DebugGui : MonoBehaviour {
 		
 		if ( mBackgroundLearner != null )
 			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustScoreShader, ref mJustScoreTexture );
+		
+		if ( mBackgroundLearner != null && mWebcamTextureManager != null )
+			UpdateSubtractTexture( mWebcamTextureManager.mTextureOutput, mBackgroundLearner.mBackgroundTexture, SubtractShader, ref mSubtractTexture );
+	}
+	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,Shader shader,ref RenderTexture TempTexture)
+	{
+		if (shader == null)
+			return;
+		
+		if (TempTexture == null)
+			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, RenderTextureFormat.ARGBFloat);
+
+		Material SubtractMat = new Material (shader);
+		SubtractMat.SetTexture ("LastBackgroundTex",BackgroundTexture);
+		Graphics.Blit (LiveTexture, TempTexture, SubtractMat);
 	}
 
 	void UpdateTempTexture(Texture texture,Shader shader,ref RenderTexture TempTexture)
@@ -70,5 +87,8 @@ public class DebugGui : MonoBehaviour {
 
 		if ( mJustScoreTexture != null )
 			DrawTexture( 2, 2, mJustScoreTexture );
+
+		if (mSubtractTexture != null)
+			DrawTexture (0, 2, mSubtractTexture);
 	}
 }

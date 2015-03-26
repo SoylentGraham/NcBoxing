@@ -140,7 +140,7 @@ Material:
       data:
         first:
           name: DiffTolerance
-        second: .0299999993
+        second: .00999999978
       data:
         first:
           name: Radius
@@ -148,7 +148,15 @@ Material:
       data:
         first:
           name: DiffRadius
-        second: 3
+        second: 8
+      data:
+        first:
+          name: TextureWidth
+        second: 128
+      data:
+        first:
+          name: TextureHeight
+        second: 128
     m_Colors:
       data:
         first:

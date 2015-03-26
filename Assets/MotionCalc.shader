@@ -2,8 +2,10 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		LumLastTex ("LumLastTex", 2D) = "white" {}
-		DiffTolerance ("Tolerance", Float )= 0.03
-		DiffRadius("DiffRadius",Int) = 5
+		DiffTolerance ("DiffTolerance", Float )= 0.03
+		DiffRadius("DiffRadius",Int) = 3
+		TextureWidth("TextureWidth",Int) = 64
+		TextureHeight("TextureHeight",Int) = 64
 	}
 	SubShader {
 	 Pass {
@@ -27,6 +29,8 @@
 			sampler2D LumLastTex;
 			float DiffTolerance;
 			int DiffRadius;			
+			int TextureWidth;
+			int TextureHeight;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -37,10 +41,13 @@
 			
 			float3 GetDeltaDiff(float BaseLum,int2 SampleOffsetPixels,FragInput In)
 			{
-				float2 PixelsToUv = float2( 256.0/1.0, 256.0/1.0 );
+				float2 PixelsToUv = float2( 1.0/(float)TextureWidth, 1.0/(float)TextureHeight );
 				float2 SampleOffsetUv = SampleOffsetPixels * PixelsToUv;
 				float PrevLum = tex2D( LumLastTex, In.uv_MainTex + SampleOffsetUv ).r;
-				return float3( SampleOffsetPixels.x, SampleOffsetPixels.y, BaseLum - PrevLum );
+				float Diff = BaseLum - PrevLum;
+				if ( abs(Diff) > DiffTolerance )
+					Diff = 10000.0f;
+				return float3( SampleOffsetPixels.x, SampleOffsetPixels.y, Diff );
 			}
 			
 			float3 GetBestDeltaDiff(float3 a,float3 b)
@@ -104,7 +111,12 @@
 					
 				//	normalise (-r...r) to 0...1
 				float2 Delta = DeltaDiff.xy;			//	-r...r
-				
+				/*
+				if ( Delta.x > 0 )	Delta.x = DiffRadius;
+				if ( Delta.x < 0 )	Delta.x = -DiffRadius;
+				if ( Delta.y > 0 )	Delta.y = DiffRadius;
+				if ( Delta.y < 0 )	Delta.y = -DiffRadius;
+				*/
 				Delta /= float2(DiffRadius,DiffRadius);	//	-1...1
 				Delta /= float2(2,2);	//	-0.5...0.5
 				Delta += float2(0.5,0.5);

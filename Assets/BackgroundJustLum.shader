@@ -1,6 +1,7 @@
 ﻿Shader "Rewind/BackgroundJustLum" {
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
+		TruthMin("TruthMin", Float ) = 0.41
 	}
 	SubShader {
 	
@@ -22,6 +23,7 @@
 			};
 
 			sampler2D _MainTex;	//	new lum
+			float TruthMin;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -33,9 +35,17 @@
 							
 			float4 frag(FragInput In) : SV_Target 
 			{
-				float Sample = tex2D( _MainTex, In.uv_MainTex ).x;
+				float Lum = tex2D( _MainTex, In.uv_MainTex ).x;
+				float Truth = tex2D( _MainTex, In.uv_MainTex ).y;
+				
+				//	if truth is low, discard
+				//	no discard texture->texture, no alpha
+				bool Discard = Truth < TruthMin;
 			
-				return float4( Sample, Sample, Sample, 1.0 );
+				if ( Discard )
+					return float4(1,0,0,0);
+			
+				return float4( Lum, Lum, Lum, Discard?0.0:1.0 );
 			}
 		ENDCG
 	}

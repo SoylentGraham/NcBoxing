@@ -205,6 +205,10 @@ MonoBehaviour:
   mMotionTextureGenerator: {fileID: 2034646912}
   mWebcamTextureManager: {fileID: 877451875}
   mBackgroundLearner: {fileID: 136458882}
+  BackgroundJustLumShader: {fileID: 4800000, guid: 75faf2431d45143b6aac969f8e0fd0bd,
+    type: 3}
+  BackgroundJustScoreShader: {fileID: 4800000, guid: 84d9ce86099e147bf96730fa3f590e13,
+    type: 3}
 --- !u!81 &1889544385
 AudioListener:
   m_ObjectHideFlags: 0
@@ -304,6 +308,8 @@ MonoBehaviour:
   mVideoToLumShader: {fileID: 4800000, guid: 079fd334045934180b4004bf7e54655a, type: 3}
   LumToMotionMaterial: {fileID: 2100000, guid: b361537f482c14b4281efcb86ae81d13, type: 2}
   mMotionInitShader: {fileID: 4800000, guid: 5560bda7bc4d1423e8ed3b81a344fedf, type: 3}
+  mMotionFillerMaterial: {fileID: 2100000, guid: 28c5c8f6e36a144c4aadd27966a82b14,
+    type: 2}
 --- !u!4 &2034646913
 Transform:
   m_ObjectHideFlags: 0

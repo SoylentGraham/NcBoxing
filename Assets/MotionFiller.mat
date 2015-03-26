@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: BackgroundLearner
-  m_Shader: {fileID: 4800000, guid: 3abc3aa8761334530b0105a5b9536196, type: 3}
+  m_Name: MotionFiller
+  m_Shader: {fileID: 4800000, guid: 32e69ef5cdb3e45a28116a8ee87c4896, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
@@ -77,27 +77,6 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: BackgroundLast
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: LastBackground
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: LastBackgroundTex
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -153,16 +132,16 @@ Material:
         second: 0
       data:
         first:
-          name: AgeMax
-        second: 100
+          name: FillRadius
+        second: 4
       data:
         first:
-          name: Init
-        second: 0
+          name: TextureWidth
+        second: 128
       data:
         first:
-          name: LumDiffMax
-        second: .100000001
+          name: TextureHeight
+        second: 128
     m_Colors:
       data:
         first:

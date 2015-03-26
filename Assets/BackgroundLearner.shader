@@ -2,9 +2,9 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		LastBackgroundTex ("LastBackgroundTex", 2D) = "white" {}
-		AgeMax	("AgeMax", Int ) = 100
+		AgeMax	("AgeMax", Int ) = 1000
 		Init	("Init", Int ) = 1
-		LumDiffMax	("LumDiffMax", Float ) = 0.30
+		LumDiffMax	("LumDiffMax", Float ) = 0.99
 	}
 	SubShader {
 	
@@ -45,12 +45,12 @@
 			
 			float4 MakeLumTruthAge(float Lum,float Truth,int Age)
 			{
+				Truth = clamp( Truth, 0, 1 );
 				//	lum is lum
 				//	truth is 0..1 (integrety)
 				//	age is frames/max frames
 				float Agef = (float)Age / (float)AgeMax;
-				Agef = min( 1.0, Agef );
-				Agef = max( 0.0, Agef );
+				Agef = clamp( Agef, 0, 1 );
 				return float4(Lum,Truth,Agef,1).xyzw;
 			}
 
@@ -64,7 +64,7 @@
 			float4 InitLumTruthAge(FragInput In)
 			{
 				float NewLum = tex2D( _MainTex, In.uv_MainTex );
-				return MakeLumTruthAge( NewLum, 1.0, 1 );
+				return MakeLumTruthAge( NewLum, 1.0/(float)AgeMax, 1 );
 			}
 			
 			float4 UpdateLumTruthAge(FragInput In)
@@ -74,47 +74,37 @@
 
 
 				//	get score of this lum
-				float LumDiff = NewLumSample - OldLumTruthAge.x;
-				float LumScore = 1.0f - ( clamp( abs(LumDiff) / LumDiffMax, 0, 1 ) );
+				float LumDiff = abs(NewLumSample - OldLumTruthAge.x);
+				float LumScore = 1.0f - ( clamp( LumDiff / LumDiffMax, 0, 1 ) );
+				bool BadLum = (LumDiff / LumDiffMax) >= 1.0f;
 				
-				float NewWeight = LumScore / OldLumTruthAge.z;
+				float OldTruth = OldLumTruthAge.y;
+				float NewTruth = OldTruth;
+				
+				//	use agemax for slow build up, use .z for very fast learn
+				float FrameDelta = 1.0f / (float)AgeMax;
+				//float FrameDelta = 1.0f / (float)OldLumTruthAge.z;
+				
+				//	if lum score is bad, we want to decrease the truth ("this pixel is noisy")
+				if ( BadLum )
+				{
+					NewTruth -= FrameDelta;
+				}
+				else
+				{
+					NewTruth += LumScore * FrameDelta;
+				}
+												
+				float NewLumInfluence = 5.0f;
+				float NewWeight = LumScore * (FrameDelta*NewLumInfluence) * (1.0 - NewTruth);
 				float OldWeight = 1.0f - NewWeight;
-				
-				//	merge with old score
-				float OldScore = OldLumTruthAge.y;
-				float NewScore = (LumScore*NewWeight) + (OldScore*OldWeight);
 				
 				float OldLum = OldLumTruthAge.x;
 				float NewLum = (NewLumSample*NewWeight) + (OldLum*OldWeight);
-				
+								
 				int NewAge = OldLumTruthAge.z + 1;
 				
-				return MakeLumTruthAge( NewLum, NewScore, NewAge );
-				/*
-				
-				//	do we use this new lum, or is it wildly different that we ignore it?
-				float LumDiff = NewLum - OldLumTruthAge.x;
-				
-				//	gr: lose some integrety here?
-				if ( abs(LumDiff) > LumDiffMax )
-				{
-					int NewAge = OldLumTruthAge.z-1;
-					float NewTruth = OldLumTruthAge.y;
-					float NewAvgLum = OldLumTruthAge.x;
-					return MakeLumTruthAge( NewAvgLum, NewTruth, NewAge );
-				}
-					
-				//	update by
-				//	increasing age
-				//	averaging Lum
-				//	increase/decreate truth by the variance
-				float FrameWeight = 1.0f / OldLumTruthAge.z;
-				float NewAvgLum = Lerp( NewLum, OldLumTruthAge.x, FrameWeight ); 	//	10 frames old, merge 1/10th 
-				float NewTruth = OldLumTruthAge.y + (((1.0f-abs(LumDiff))/LumDiffMax) * FrameWeight);
-				int NewAge = OldLumTruthAge.z+1;
-				
-				return MakeLumTruthAge( NewAvgLum, NewTruth, NewAge );
-				*/
+				return MakeLumTruthAge( NewLum, NewTruth, NewAge );
 			}
 						
 			float4 frag(FragInput In) : SV_Target 
