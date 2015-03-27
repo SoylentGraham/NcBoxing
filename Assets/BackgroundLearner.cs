@@ -6,7 +6,7 @@ public class BackgroundLearner : MonoBehaviour {
 	public MotionTextureGenerator	mMotionTextureGenerator;
 	public RenderTexture			mBackgroundTexture;
 	public Material					mBackgroundLearnerMat;
-
+	public RenderTextureFormat		mRenderTextureFormat = RenderTextureFormat.ARGBFloat;
 	// Use this for initialization
 	void Start () {
 	
@@ -29,7 +29,7 @@ public class BackgroundLearner : MonoBehaviour {
 
 		//	first run
 		if (mBackgroundTexture == null) {
-			mBackgroundTexture = new RenderTexture (LumTexture.width, LumTexture.height, 0, RenderTextureFormat.ARGBFloat);
+			mBackgroundTexture = new RenderTexture (LumTexture.width, LumTexture.height, 0, mRenderTextureFormat );
 			mBackgroundLearnerMat.SetInt("Init",1);
 			Graphics.Blit (LumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 			mBackgroundLearnerMat.SetInt("Init",0);

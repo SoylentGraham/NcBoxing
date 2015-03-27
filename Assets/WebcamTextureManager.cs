@@ -9,6 +9,7 @@ public class WebcamTextureManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 	
+
 	}
 	
 	// Update is called once per frame
@@ -16,9 +17,15 @@ public class WebcamTextureManager : MonoBehaviour {
 	
 		if (!mTextureOutput) {
 
-			if ( DeviceName.Length > 0 )
+			Application.RequestUserAuthorization(UserAuthorization.WebCam);
+
+			string RealDeviceName = DeviceName;
+#if UNITY_ANDROID
+			RealDeviceName = "";
+#endif
+			if ( RealDeviceName.Length > 0 )
 			{
-				mTextureOutput = new WebCamTexture (DeviceName);
+				mTextureOutput = new WebCamTexture (RealDeviceName);
 			}
 			else
 			{
@@ -29,14 +36,17 @@ public class WebcamTextureManager : MonoBehaviour {
 				mTextureOutput = new WebCamTexture ();
 			}
 
-			mTextureOutput.Play ();
+			if ( mTextureOutput != null )
+				mTextureOutput.Play ();
 		}
 	}
 
 	void OnDisable()
 	{
-		mTextureOutput.Stop ();
-		mTextureOutput = null;
+		if (mTextureOutput != null) {
+			mTextureOutput.Stop ();
+			mTextureOutput = null;
+		}
 	}
 }
 

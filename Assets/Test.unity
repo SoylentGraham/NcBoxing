@@ -118,6 +118,7 @@ MonoBehaviour:
   mBackgroundTexture: {fileID: 8400000, guid: 103a1310177c449b3b8a5b88f34df74e, type: 2}
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
+  mRenderTextureFormat: 0
 --- !u!4 &136458883
 Transform:
   m_ObjectHideFlags: 0
