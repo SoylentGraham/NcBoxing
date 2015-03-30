@@ -20,6 +20,12 @@ public class DebugGui : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		//	reset
+		if (Input.GetMouseButtonDown (0)) {
+			if (mBackgroundLearner != null)
+				mBackgroundLearner.OnDisable ();
+		}
 	
 		//	update intermediate textures
 		if ( mBackgroundLearner != null )

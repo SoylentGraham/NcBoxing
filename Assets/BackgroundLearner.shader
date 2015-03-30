@@ -64,7 +64,8 @@
 
 			float4 InitLumTruthAge(FragInput In)
 			{
-				float NewLum = tex2D( _MainTex, In.uv_MainTex );
+				float NewLum = tex2D( _MainTex, In.uv_MainTex ).r;
+					
 				int Age = 1;
 				float FrameDelta = 1.0f / (AgeSlowly ? (float)AgeMax : (float)Age);
 				return MakeLumTruthAge( NewLum, FrameDelta, Age );
@@ -74,7 +75,6 @@
 			{
 				float4 OldLumTruthAge = GetLumTruthAge(In.uv_MainTex);
 				float NewLumSample = tex2D( _MainTex, In.uv_MainTex ).r;
-
 
 				//	get score of this lum
 				float OldLum = OldLumTruthAge.x;

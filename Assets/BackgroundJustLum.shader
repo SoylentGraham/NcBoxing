@@ -38,14 +38,16 @@
 				float Lum = tex2D( _MainTex, In.uv_MainTex ).x;
 				float Truth = tex2D( _MainTex, In.uv_MainTex ).y;
 				
+				/*
 				//	if truth is low, discard
 				//	no discard texture->texture, no alpha
 				bool Discard = Truth < TruthMin;
 			
 				if ( Discard )
 					return float4(1,0,0,0);
-			
-				return float4( Lum, Lum, Lum, Discard?0.0:1.0 );
+				*/
+				bool Discard = false;
+				return float4( Lum, 0, 0, Discard?0.0:1.0 );
 			}
 		ENDCG
 	}

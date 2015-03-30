@@ -25,7 +25,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 	void OnDisable()
 	{
 	//	mLumTexture = null;
-	//	mLumTextureLast = null;
+		mLumTextureLast = null;
 	//	mMotionTexture = null;
 	}
 
@@ -56,6 +56,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 		if (!LumToMotionMaterial)
 			return false;
 
+
 		if ( LumTexturePrev == null) 
 		{
 			//	run init motion texture shader
@@ -64,8 +65,10 @@ public class MotionTextureGenerator : MonoBehaviour {
 		else{
 			LumToMotionMaterial.SetTexture("LumLastTex", LumTexturePrev );
 
+			/*
 			//	run normal motion generator
 			Graphics.Blit (LumTextureNew, mMotionTexture, LumToMotionMaterial );
+
 			if ( mMotionFillerMaterial != null )
 			{
 				var Temp = RenderTexture.GetTemporary( mMotionTexture.width, mMotionTexture.height, 0, mMotionTexture.format );
@@ -73,6 +76,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 				Graphics.Blit (Temp, mMotionTexture );
 				RenderTexture.ReleaseTemporary( Temp );
 			}
+			*/
 		}
 
 		return true;
@@ -98,5 +102,6 @@ public class MotionTextureGenerator : MonoBehaviour {
 
 		//	copy for next run
 		Graphics.Blit (mLumTexture, mLumTextureLast);
+
 	}
 }

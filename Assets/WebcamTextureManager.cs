@@ -23,6 +23,9 @@ public class WebcamTextureManager : MonoBehaviour {
 #if UNITY_ANDROID
 			RealDeviceName = "";
 #endif
+#if UNITY_IOS
+			RealDeviceName = "";
+#endif
 			if ( RealDeviceName.Length > 0 )
 			{
 				mTextureOutput = new WebCamTexture (RealDeviceName);

@@ -115,7 +115,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mMotionTextureGenerator: {fileID: 2034646912}
-  mBackgroundTexture: {fileID: 8400000, guid: 103a1310177c449b3b8a5b88f34df74e, type: 2}
+  mBackgroundTexture: {fileID: 0}
+  mLastBackgroundTexture: {fileID: 0}
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
   mRenderTextureFormat: 0
@@ -159,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mTextureOutput: {fileID: 0}
-  DeviceName: FaceTime HD Camera (Built-in)
+  DeviceName: 
 --- !u!4 &877451876
 Transform:
   m_ObjectHideFlags: 0
@@ -172,32 +173,32 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
---- !u!1 &1889544383
+--- !u!1 &1298924854
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 1889544389}
-  - 20: {fileID: 1889544388}
-  - 92: {fileID: 1889544387}
-  - 124: {fileID: 1889544386}
-  - 81: {fileID: 1889544385}
-  - 114: {fileID: 1889544384}
+  - 4: {fileID: 1298924860}
+  - 20: {fileID: 1298924859}
+  - 92: {fileID: 1298924858}
+  - 124: {fileID: 1298924857}
+  - 81: {fileID: 1298924856}
+  - 114: {fileID: 1298924855}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: Main Camera 1
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1889544384
+--- !u!114 &1298924855
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c4d14e83943c34d5699584c680f621b6, type: 3}
@@ -211,33 +212,33 @@ MonoBehaviour:
   BackgroundJustScoreShader: {fileID: 4800000, guid: 84d9ce86099e147bf96730fa3f590e13,
     type: 3}
   SubtractShader: {fileID: 4800000, guid: 108589f39ea524e039a45c2ed6266839, type: 3}
---- !u!81 &1889544385
+--- !u!81 &1298924856
 AudioListener:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_Enabled: 1
---- !u!124 &1889544386
+--- !u!124 &1298924857
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_Enabled: 1
---- !u!92 &1889544387
+--- !u!92 &1298924858
 Behaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_Enabled: 1
---- !u!20 &1889544388
+--- !u!20 &1298924859
 Camera:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
@@ -264,12 +265,12 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: .0219999999
---- !u!4 &1889544389
+--- !u!4 &1298924860
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1889544383}
+  m_GameObject: {fileID: 1298924854}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
