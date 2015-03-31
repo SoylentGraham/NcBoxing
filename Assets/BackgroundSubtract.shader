@@ -2,7 +2,9 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		BackgroundTex ("LastBackgroundTex", 2D) = "white" {}
-
+		BadTruth_LumDiff("BadTruth_LumDiff", Float ) = 0.60
+		GoodTruth_LumDiff("GoodTruth_LumDiff", Float ) = 0.10
+		TruthMin("TruthMin", Float ) = 0.01
 	}
 	SubShader {
 	
@@ -23,9 +25,9 @@
 				float2	uv_MainTex : TEXCOORD0;
 			};
 
-			const float BadTruth_LumDiff = 0.60;		//	when truth is bad, diff needs to be high
-			const float GoodTruth_LumDiff = 0.10;	//	when truth is good, diff can be low
-			const float TruthMin = 0.01;
+			float BadTruth_LumDiff;
+			float GoodTruth_LumDiff;
+			float TruthMin;
 			sampler2D _MainTex;	//	live
 			sampler2D LastBackgroundTex;
 
@@ -47,11 +49,13 @@
 				//	more accurate background, lower the tolerance
 				float DiffMin = lerp( BadTruth_LumDiff, GoodTruth_LumDiff, BgTruth );
 
+				bool IsForeground = true;
+				
 				//	very similar to background, and we trust background
 				if ( abs(LiveLum-BgLum) < DiffMin && BgTruth > TruthMin )
-					return float4(1,0,0,0 );
+					IsForeground = false;
 				
-				return float4( LiveLum, LiveLum, LiveLum, 1 );
+				return float4( LiveLum, LiveLum, LiveLum, IsForeground ? 1 : 0 );
 			}
 		ENDCG
 	}

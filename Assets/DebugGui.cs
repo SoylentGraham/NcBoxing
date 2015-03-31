@@ -11,7 +11,10 @@ public class DebugGui : MonoBehaviour {
 	private RenderTexture		mJustLumTexture;
 	private RenderTexture		mJustScoreTexture;
 	private RenderTexture		mSubtractTexture;
-	public Shader	SubtractShader;
+	public Material				mSubtractMaterial;
+	public Material				mSubtractFillMaterial;
+	public RenderTextureFormat	mTempTextureFormat = RenderTextureFormat.ARGBFloat;
+	public FilterMode			mTempTextureFilterMode = FilterMode.Point;
 
 	// Use this for initialization
 	void Start () {
@@ -37,24 +40,35 @@ public class DebugGui : MonoBehaviour {
 		if (mBackgroundLearner != null && mWebcamTextureManager != null) {
 			//Texture LiveTexture = mWebcamTextureManager.mTextureOutput;
 			Texture LiveTexture = mMotionTextureGenerator.mLumTexture;
-			UpdateSubtractTexture (LiveTexture, mBackgroundLearner.mBackgroundTexture, SubtractShader, ref mSubtractTexture);
+			UpdateSubtractTexture (LiveTexture, mBackgroundLearner.mBackgroundTexture, ref mSubtractTexture);
 		}
 	}
 
-	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,Shader shader,ref RenderTexture TempTexture)
+	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,ref RenderTexture TempTexture)
 	{
-		if (shader == null)
-			return;
 		if (LiveTexture == null)
 			return;
 		if (BackgroundTexture == null)
 			return;
-		if (TempTexture == null)
-			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, RenderTextureFormat.ARGBFloat);
+		if (mSubtractMaterial == null)
+			return;
+		if (TempTexture == null) {
+			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
+			TempTexture.filterMode = mTempTextureFilterMode;
+		}
 
-		Material SubtractMat = new Material (shader);
-		SubtractMat.SetTexture ("LastBackgroundTex",BackgroundTexture);
-		Graphics.Blit (LiveTexture, TempTexture, SubtractMat);
+		mSubtractMaterial.SetTexture ("LastBackgroundTex",BackgroundTexture);
+		Graphics.Blit (LiveTexture, TempTexture, mSubtractMaterial);
+
+		//	do a fill
+		if (mSubtractFillMaterial != null) {
+			RenderTexture FillTempTexture = RenderTexture.GetTemporary(LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
+			FillTempTexture.filterMode = mTempTextureFilterMode;
+			Graphics.Blit( TempTexture, FillTempTexture, mSubtractFillMaterial );
+			Graphics.Blit( FillTempTexture, TempTexture );
+			RenderTexture.ReleaseTemporary( FillTempTexture);
+		}
+
 	}
 
 	void UpdateTempTexture(Texture texture,Shader shader,ref RenderTexture TempTexture)
@@ -62,9 +76,11 @@ public class DebugGui : MonoBehaviour {
 		if (shader == null)
 			return;
 		
-		if (TempTexture == null)
-			TempTexture = new RenderTexture (texture.width, texture.height, 0, RenderTextureFormat.ARGBFloat);
-		
+		if (TempTexture == null) {
+			TempTexture = new RenderTexture (texture.width, texture.height, 0, mTempTextureFormat);
+			TempTexture.filterMode = mTempTextureFilterMode;
+		}
+
 		Graphics.Blit (texture, TempTexture, new Material (shader));
 	}
 

@@ -3,6 +3,9 @@
 		_MainTex ("_MainTex", 2D) = "white" {}
 		LastBackgroundTex ("LastBackgroundTex", 2D) = "white" {}
 		Init	("Init", Int ) = 1
+		LumDiffMax("LumDiffMax",Float) = 0.20
+		NewLumInfluence("NewLumInfluence",Float) = 1.0
+
 	}
 	SubShader {
 	
@@ -27,8 +30,8 @@
 			sampler2D _MainTex;	//	new lum
 			sampler2D LastBackgroundTex;
 			const int AgeMax = 20;
-			const float LumDiffMax = 0.20;
-			const float NewLumInfluence = 1.0f;
+			float LumDiffMax;
+			float NewLumInfluence;
 			const bool SquareScore = true;
 			const bool AgeSlowly = true;
 
@@ -103,7 +106,7 @@
 					NewTruth += LumScore * FrameDelta;
 				}
 
-				float NewWeight = LumScore * (FrameDelta*NewLumInfluence) * (1.0 - NewTruth);
+				float NewWeight = (LumScore * (FrameDelta*NewLumInfluence)) * (1.0 - NewTruth);
 				float OldWeight = 1.0f - NewWeight;
 				
 				float NewLum = (NewLumSample*NewWeight) + (OldLum*OldWeight);
