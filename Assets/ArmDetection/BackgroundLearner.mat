@@ -171,6 +171,10 @@ Material:
         first:
           name: LumDiffIgnore
         second: .5
+      data:
+        first:
+          name: NewLumInfluence
+        second: 1
     m_Colors:
       data:
         first:

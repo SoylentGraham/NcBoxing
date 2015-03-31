@@ -120,6 +120,7 @@ MonoBehaviour:
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
   mRenderTextureFormat: 0
+  mRenderTextureFilterMode: 0
 --- !u!4 &136458883
 Transform:
   m_ObjectHideFlags: 0
@@ -211,7 +212,11 @@ MonoBehaviour:
     type: 3}
   BackgroundJustScoreShader: {fileID: 4800000, guid: 84d9ce86099e147bf96730fa3f590e13,
     type: 3}
-  SubtractShader: {fileID: 4800000, guid: 108589f39ea524e039a45c2ed6266839, type: 3}
+  mSubtractMaterial: {fileID: 2100000, guid: 2f26b55b7a63a4c4ea984087c663cf9a, type: 2}
+  mSubtractFillMaterial: {fileID: 2100000, guid: da7b1e0609b654ae0b5d96fe7dd42f64,
+    type: 2}
+  mTempTextureFormat: 0
+  mTempTextureFilterMode: 0
 --- !u!81 &1298924856
 AudioListener:
   m_ObjectHideFlags: 0
