@@ -22,6 +22,7 @@
 			};
 
 			sampler2D _MainTex;	//	new lum
+			float4 _MainTex_TexelSize;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -30,10 +31,26 @@
 				return Out;
 			}
 		
+		
+			int GetColumnHeight(float s)
+			{
+				int Height = _MainTex_TexelSize.w;
+				for ( int i=0;	i<Height;	i++)
+				{
+					float t = (float)i * _MainTex_TexelSize.y;
+					float Alpha = tex2D( _MainTex, float2( s, t ) ).r;
+					if ( Alpha > 0.5f )
+						return i;
+				}
+				return Height;
+			}
 							
 			float4 frag(FragInput In) : SV_Target 
 			{
-				return float4(1,0,0,1);
+				int Height = GetColumnHeight( In.uv_MainTex.x );
+				bool Valid = (Height!=0) ;
+				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
+				return float4( Valid?1:0, HeightNorm, 0, 1.0f );
 			}
 		ENDCG
 	}
