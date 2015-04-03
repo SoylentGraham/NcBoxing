@@ -121,6 +121,10 @@ MonoBehaviour:
   mInputTexture: {fileID: 2800000, guid: af212ccff7233460692d690dddd579bc, type: 3}
   mRayTexture: {fileID: 8400000, guid: 1d2e79813eb5b4580911816d0609ea9c, type: 2}
   mRayMaterial: {fileID: 2100000, guid: dd39e9cf41434439ca706c4a928a93a7, type: 2}
+  mSecondJointTexture: {fileID: 8400000, guid: fbe12db2fc2b74aeea2ff1084de38b74, type: 2}
+  mSecondJointMaterial: {fileID: 2100000, guid: 00c5c25e4c6b5438798e8212ddee7672,
+    type: 2}
+  mSecondJointTextureCopy: {fileID: 0}
 --- !u!81 &256983241
 AudioListener:
   m_ObjectHideFlags: 0

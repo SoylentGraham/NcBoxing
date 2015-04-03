@@ -31,16 +31,20 @@
 				return Out;
 			}
 		
-		
+			bool IsMask(float2 st)
+			{
+				float Alpha = tex2D( _MainTex, st ).r;
+				return ( Alpha < 0.5f );
+			}
+			
 			int GetColumnHeight(float s)
 			{
 				int Height = _MainTex_TexelSize.w;
-				for ( int i=0;	i<Height;	i++)
+				for ( int i=1;	i<Height;	i++)
 				{
 					float t = (float)i * _MainTex_TexelSize.y;
-					float Alpha = tex2D( _MainTex, float2( s, t ) ).r;
-					if ( Alpha > 0.5f )
-						return i;
+					if ( !IsMask( float2(s,t) ) )
+						return (i-1);
 				}
 				return Height;
 			}
@@ -48,9 +52,8 @@
 			float4 frag(FragInput In) : SV_Target 
 			{
 				int Height = GetColumnHeight( In.uv_MainTex.x );
-				bool Valid = (Height!=0) ;
 				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
-				return float4( Valid?1:0, HeightNorm, 0, 1.0f );
+				return float4( HeightNorm, 0, 0, 1.0f );
 			}
 		ENDCG
 	}
