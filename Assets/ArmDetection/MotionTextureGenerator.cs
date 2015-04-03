@@ -88,7 +88,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 		if (mWebcamTextureManager == null)
 			return;
 
-		Texture VideoTexture = mWebcamTextureManager.mTextureOutput;
+		Texture VideoTexture = mWebcamTextureManager.mOutputTexture;
 
 		if (!ExecuteShaderVideoToLum (VideoTexture))
 			return;

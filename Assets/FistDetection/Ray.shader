@@ -37,8 +37,8 @@
 				//	gr: change this to a texture border to stop
 				if ( st.x < 0.0f || st.x > 1.0f || st.y < 0.0f || st.y > 1.0f )
 					return false;
-				float Alpha = tex2D( _MainTex, st ).r;
-				return ( Alpha < 0.7f );
+				float Alpha = tex2D( _MainTex, st ).a;
+				return ( Alpha > 0.5f );
 			}
 			
 			int GetColumnHeight(float s)

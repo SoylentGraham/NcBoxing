@@ -3,9 +3,11 @@ using System.Collections;
 
 public class BackgroundLearner : MonoBehaviour {
 
-	public MotionTextureGenerator	mMotionTextureGenerator;
+	public Texture					mInputTexture;
+	public RenderTexture			mLumTexture;
+	public Shader					mLumShader;
 	public RenderTexture			mBackgroundTexture;
-	public RenderTexture			mLastBackgroundTexture;
+	private RenderTexture			mLastBackgroundTexture;
 	public Material					mBackgroundLearnerMat;
 	public RenderTextureFormat		mRenderTextureFormat = RenderTextureFormat.ARGBFloat;
 	public FilterMode				mRenderTextureFilterMode = FilterMode.Point;
@@ -26,19 +28,23 @@ public class BackgroundLearner : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		//	need a lum texture to update
-		Texture LumTexture = (mMotionTextureGenerator != null) ? mMotionTextureGenerator.mLumTexture : null;
-		if (LumTexture == null)
+		if (mInputTexture == null)
 			return;
+
+		//	update lum texture
+		if (mLumShader == null || mLumTexture == null)
+			return;
+		Graphics.Blit (mInputTexture, mLumTexture, new Material (mLumShader));
+
 		if (mBackgroundLearnerMat == null)
 			return;
 
 		//	first run
 		if (mBackgroundTexture == null) {
-			mBackgroundTexture = new RenderTexture (LumTexture.width, LumTexture.height, 0, mRenderTextureFormat );
+			mBackgroundTexture = new RenderTexture (mLumTexture.width, mLumTexture.height, 0, mRenderTextureFormat );
 			mBackgroundTexture.filterMode = mRenderTextureFilterMode;
 			mBackgroundLearnerMat.SetInt("Init",1);
-			Graphics.Blit (LumTexture, mBackgroundTexture, mBackgroundLearnerMat);
+			Graphics.Blit (mLumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 			mBackgroundLearnerMat.SetInt("Init",0);
 		}
 
@@ -49,6 +55,6 @@ public class BackgroundLearner : MonoBehaviour {
 		Graphics.Blit (mBackgroundTexture, mLastBackgroundTexture);
 		mBackgroundLearnerMat.SetInt("Init",0);
 		mBackgroundLearnerMat.SetTexture ("LastBackgroundTex", mLastBackgroundTexture);
-		Graphics.Blit (LumTexture, mBackgroundTexture, mBackgroundLearnerMat);
+		Graphics.Blit (mLumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 	}
 }

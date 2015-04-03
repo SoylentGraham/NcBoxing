@@ -100,7 +100,7 @@ public class DebugGui : MonoBehaviour {
 	void OnGUI()
 	{
 		if ( mWebcamTextureManager != null )
-			DrawTexture( 0, 0, mWebcamTextureManager.mTextureOutput );
+			DrawTexture( 0, 0, mWebcamTextureManager.mOutputTexture );
  
 		if ( mMotionTextureGenerator != null )
 			DrawTexture( 1, 0, mMotionTextureGenerator.mLumTexture );

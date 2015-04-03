@@ -3,8 +3,9 @@ using System.Collections;
 
 public class WebcamTextureManager : MonoBehaviour {
 
-	public WebCamTexture mTextureOutput = null;
+	private WebCamTexture	mWebcamTexture;
 	public string DeviceName = "";
+	public RenderTexture	mOutputTexture;
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +16,7 @@ public class WebcamTextureManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-		if (!mTextureOutput) {
+		if (!mWebcamTexture) {
 
 			Application.RequestUserAuthorization(UserAuthorization.WebCam);
 
@@ -28,7 +29,7 @@ public class WebcamTextureManager : MonoBehaviour {
 #endif
 			if ( RealDeviceName.Length > 0 )
 			{
-				mTextureOutput = new WebCamTexture (RealDeviceName);
+				mWebcamTexture = new WebCamTexture (RealDeviceName);
 			}
 			else
 			{
@@ -36,19 +37,23 @@ public class WebcamTextureManager : MonoBehaviour {
 				foreach( WebCamDevice w in WebCamTexture.devices )
 					debug += "\n" + w.name;
 				Debug.Log(debug);
-				mTextureOutput = new WebCamTexture ();
+				mWebcamTexture = new WebCamTexture ();
 			}
 
-			if ( mTextureOutput != null )
-				mTextureOutput.Play ();
+			if ( mWebcamTexture != null )
+				mWebcamTexture.Play ();
+		}
+
+		if (mOutputTexture && mWebcamTexture) {
+			Graphics.Blit (mWebcamTexture, mOutputTexture);
 		}
 	}
 
 	void OnDisable()
 	{
-		if (mTextureOutput != null) {
-			mTextureOutput.Stop ();
-			mTextureOutput = null;
+		if (mWebcamTexture != null) {
+			mWebcamTexture.Stop ();
+			mWebcamTexture = null;
 		}
 	}
 }
