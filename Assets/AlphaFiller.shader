@@ -1,6 +1,8 @@
 ﻿Shader "Rewind/AlphaFiller" {
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
+		SampleRadius("SampleRadius", Int ) = 2
+		HitCountMin("HitCountMin", Int ) = 7
 	}
 	SubShader {
 	
@@ -23,9 +25,8 @@
 
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
-			const int SampleRadius = 2;
-			//#define SampleRadius 2
-			const int HitCountMin = 7;
+			int SampleRadius;
+			int HitCountMin;
 
 
 			FragInput vert(VertexInput In) {
@@ -58,16 +59,7 @@
 					HitCount += HasHit( In, int2( -Radius,x ) );
 					HitCount += HasHit( In, int2( Radius,x ) );
 				}
-			
-				/*	
-				//	left & right col
-				for ( int y=(-Radius)+1;	y<=Radius-1;	y++ )
-				{
-					HitCount += HasHit( In, int2( -Radius,y ) );
-					HitCount += HasHit( In, int2( Radius,y ) );
-				}
-				*/
-				
+							
 				return HitCount;
 			}
 							
@@ -75,9 +67,10 @@
 			{
 				float4 Sample = tex2D( _MainTex, In.uv_MainTex );
 				
+				//	gr: don't do this to remove noise
 				//	already alpha
-				if ( Sample.w > 0 )
-					return Sample;
+			//	if ( Sample.w > 0 )
+			//		return Sample;
 	
 				//	should we be alpha?
 				//int HitCount = Sample.w>0 ? 1 : 0;
