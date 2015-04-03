@@ -34,6 +34,7 @@ public class BackgroundLearner : MonoBehaviour {
 		//	update lum texture
 		if (mLumShader == null || mLumTexture == null)
 			return;
+		mLumTexture.DiscardContents ();
 		Graphics.Blit (mInputTexture, mLumTexture, new Material (mLumShader));
 
 		if (mBackgroundLearnerMat == null)
@@ -44,6 +45,7 @@ public class BackgroundLearner : MonoBehaviour {
 			mBackgroundTexture = new RenderTexture (mLumTexture.width, mLumTexture.height, 0, mRenderTextureFormat );
 			mBackgroundTexture.filterMode = mRenderTextureFilterMode;
 			mBackgroundLearnerMat.SetInt("Init",1);
+			mBackgroundTexture.DiscardContents ();
 			Graphics.Blit (mLumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 			mBackgroundLearnerMat.SetInt("Init",0);
 		}
@@ -52,9 +54,11 @@ public class BackgroundLearner : MonoBehaviour {
 			mLastBackgroundTexture = new RenderTexture (mBackgroundTexture.width, mBackgroundTexture.height, 0, mRenderTextureFormat );
 			mLastBackgroundTexture.filterMode = mBackgroundTexture.filterMode;
 		}
+		mLastBackgroundTexture.DiscardContents ();
 		Graphics.Blit (mBackgroundTexture, mLastBackgroundTexture);
 		mBackgroundLearnerMat.SetInt("Init",0);
 		mBackgroundLearnerMat.SetTexture ("LastBackgroundTex", mLastBackgroundTexture);
+		mBackgroundTexture.DiscardContents ();
 		Graphics.Blit (mLumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 	}
 }

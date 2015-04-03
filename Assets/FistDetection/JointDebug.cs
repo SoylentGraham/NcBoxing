@@ -155,7 +155,6 @@ public static class GuiHelper
 
 
 
-[ExecuteInEditMode]
 public class JointDebug : MonoBehaviour {
 
 	public JointGenerator	mJointGenerator;

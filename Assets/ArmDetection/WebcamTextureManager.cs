@@ -45,6 +45,7 @@ public class WebcamTextureManager : MonoBehaviour {
 		}
 
 		if (mOutputTexture && mWebcamTexture) {
+			mOutputTexture.DiscardContents();
 			Graphics.Blit (mWebcamTexture, mOutputTexture);
 		}
 	}

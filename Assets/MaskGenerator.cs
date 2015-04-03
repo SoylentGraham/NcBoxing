@@ -31,13 +31,17 @@ public class MaskGenerator : MonoBehaviour {
 		if (mSubtractFillMaterial != null) {
 			RenderTexture FillTempTexture = RenderTexture.GetTemporary (mInputTexture.width, mInputTexture.height, 0, mTempTextureFormat);
 			FillTempTexture.filterMode = mTempTextureFilterMode;
+			FillTempTexture.DiscardContents();
 			Graphics.Blit (SubtractTempTexture, FillTempTexture, mSubtractFillMaterial);
+			SubtractTempTexture.DiscardContents();
+			mMaskTexture.DiscardContents();
 			Graphics.Blit (FillTempTexture, mMaskTexture);
 			RenderTexture.ReleaseTemporary (FillTempTexture);
 		} else {
 			Graphics.Blit( SubtractTempTexture, mMaskTexture );
 		}
 
+		SubtractTempTexture.DiscardContents ();
 		RenderTexture.ReleaseTemporary (SubtractTempTexture);
 	}
 

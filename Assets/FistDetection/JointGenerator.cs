@@ -32,7 +32,11 @@ public class TJointCalculator
 	{
 		return Degrees * Mathf.Deg2Rad;
 	}
-	
+
+	void OnDisable()
+	{
+	}
+
 	public List<TJoint> CalculateJoints(Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial)
 	{
 		if (MaskTexture == null)
@@ -40,6 +44,8 @@ public class TJointCalculator
 		
 		if (mRayTexture == null || mRayMaterial == null)
 			return null;
+
+		mRayTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mRayTexture, mRayMaterial);
 		
 		
@@ -48,6 +54,7 @@ public class TJointCalculator
 			return null;
 		mSecondJointMaterial.SetTexture ("_RayTex", mRayTexture);
 		mSecondJointMaterial.SetInt ("TargetHeight", mSecondJointTexture.height);
+		mSecondJointTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mSecondJointTexture, mSecondJointMaterial);
 		
 		
@@ -148,7 +155,6 @@ public class TJointCalculator
 
 
 
-[ExecuteInEditMode]
 public class JointGenerator : MonoBehaviour {
 	
 	public RenderTexture mRayTexture;

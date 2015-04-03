@@ -2,7 +2,7 @@
 using System.Collections;
 
 
-[ExecuteInEditMode]
+
 public class ProductionGui : MonoBehaviour {
 
 	public JointGenerator		mJointGenerator;
