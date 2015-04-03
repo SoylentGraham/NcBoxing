@@ -2,8 +2,9 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		_RayTex ("_RayTex", 2D) = "white" {}
-		AngleDegMin("AngleDegMin", Float ) = -90
-		AngleDegMax("AngleDegMax", Float ) = 90
+		AngleDegMin("AngleDegMin", Range(-180,180) ) = -90
+		AngleDegMax("AngleDegMax", Range(-180,180) ) = 90
+		MaxJointLength("MaxJointLength", Int ) = 40
 	}
 	SubShader {
 	
@@ -29,7 +30,8 @@
 			float4 _MainTex_TexelSize;
 			float AngleDegMin;
 			float AngleDegMax;
-			const int MaxJointLength = 256;
+			int MaxJointLength;
+			const int RayPad = 3;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -40,32 +42,42 @@
 		
 			bool IsMask(float2 st)
 			{
+				//	gr: change this to a texture border to stop
+				if ( st.x < 0.0f || st.x > 1.0f )
+					return false;
+				if ( st.y < 0.0f || st.y > 1.0f )
+					return false;
 				float Alpha = tex2D( _MainTex, st ).r;
 				return ( Alpha < 0.7f );
 			}
 		
 			int GetRayLength(float2 StartUv,float AngleDeg)
 			{
+				//	angles seem to be backwards to renderer...
+				AngleDeg += 0.0f;
 				float2 AngleStep = float2( sin(radians( AngleDeg )), cos(radians(AngleDeg) ) );
 				AngleStep = normalize( AngleStep );
+				//	step needs to be in pixels!
+				AngleStep *= _MainTex_TexelSize.x;	//	errr x or y... hmm kinda require square textures
 				
-				for ( int i=1;	i<MaxJointLength;	i++ )
+				for ( int i=0;	i<MaxJointLength;	i++ )
 				{
 					float2 Delta = AngleStep * (float)i;
 					if ( !IsMask( StartUv + Delta ) )
-						return (i-1);
+						return max( (i-1)-RayPad, 0 );
 				}
-				return MaxJointLength;
+				int i = MaxJointLength;
+				return max( (i-1)-RayPad,0);
 			}
-					
-			float Lerp(float from,float to,float step)
+		
+			float SoyLerp(float from,float to,float step)
 			{
 				return ((to-from)*step) + from;
-				}
+			}
 					
 			float4 frag(FragInput In) : SV_Target 
 			{
-				float AngleDeg = Lerp( AngleDegMin, AngleDegMax, In.uv_MainTex.y );
+				float AngleDeg = SoyLerp( AngleDegMin, AngleDegMax, In.uv_MainTex.y );
 				int HeightMax = _MainTex_TexelSize.w;	//	original texture height used to normalise height
 				float Heightf = tex2D( _RayTex, float2(In.uv_MainTex.x,0) ).r;
 				int Height = Heightf * (float)HeightMax;

@@ -1,4 +1,4 @@
-﻿Shader "Rewind/Ray" {
+﻿Shader "Rewind/InputMaskTest" {
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 	}
@@ -23,7 +23,6 @@
 
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
-			const int RayPad = 2;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -34,9 +33,6 @@
 		
 			bool IsMask(float2 st)
 			{
-				//	gr: change this to a texture border to stop
-				if ( st.x < 0.0f || st.x > 1.0f || st.y < 0.0f || st.y > 1.0f )
-					return false;
 				float Alpha = tex2D( _MainTex, st ).r;
 				return ( Alpha < 0.7f );
 			}
@@ -44,22 +40,19 @@
 			int GetColumnHeight(float s)
 			{
 				int Height = _MainTex_TexelSize.w;
-				for ( int i=0;	i<Height;	i++)
+				for ( int i=1;	i<Height;	i++)
 				{
 					float t = (float)i * _MainTex_TexelSize.y;
 					if ( !IsMask( float2(s,t) ) )
-						return max( (i-1)-RayPad,0);
+						return (i-1);
 				}
-				int i = Height;
-				return max( (i-1)-RayPad,0);
+				return Height;
 			}
 							
 			float4 frag(FragInput In) : SV_Target 
 			{
-				int Height = GetColumnHeight( In.uv_MainTex.x );
-				Height /= 2;
-				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
-				return float4( HeightNorm, 0, 0, 1.0f );
+				bool ismask = IsMask( In.uv_MainTex );
+				return float4( ismask?1:0, ismask?1:0, ismask?1:0, 1 );
 			}
 		ENDCG
 	}

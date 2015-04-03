@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: SecondJoint
-  m_Shader: {fileID: 4800000, guid: b4fe19fe7206d41c9b593a044987c922, type: 3}
+  m_Name: InputMaskTest
+  m_Shader: {fileID: 4800000, guid: 21ea3c94f8d294ecfbcf18b7ff5915f9, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
@@ -77,13 +77,6 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _RayTex
-        second:
-          m_Texture: {fileID: 8400000, guid: 1d2e79813eb5b4580911816d0609ea9c, type: 2}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -137,18 +130,6 @@ Material:
         first:
           name: _Metallic
         second: 0
-      data:
-        first:
-          name: AngleDegMin
-        second: -114
-      data:
-        first:
-          name: AngleDegMax
-        second: 116
-      data:
-        first:
-          name: MaxJointLength
-        second: 256
     m_Colors:
       data:
         first:

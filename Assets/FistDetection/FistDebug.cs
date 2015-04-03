@@ -180,6 +180,8 @@ public class FistDebug : MonoBehaviour {
 	public Material			mSecondJointMaterial;
 	public Texture2D		mSecondJointTextureCopy;
 	public List<TJoint>		mJoints = new List<TJoint>();
+	public Material			mMaskTestMaterial;
+	public RenderTexture	mMaskTestTexture;
 
 	// Use this for initialization
 	void Start () {
@@ -199,7 +201,7 @@ public class FistDebug : MonoBehaviour {
 
 	List<TJoint> CalculateJoints(Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax)
 	{
-		int MaxJoints = 100;
+		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
 
 		//	gr: verify w/h agains pixels size?
@@ -214,22 +216,45 @@ public class FistDebug : MonoBehaviour {
 		//	gr: could probbaly be more cache friendly by approaching this row-by-row...
 		for (int x=0; x<Width; x++) 
 		{
+			//	height is the same for each angle so we can skip that quick
+			int g = SecondJointPixels[x].g;	//	x+angstep*width == x
+			float Height = ( g / 255.0f ) * InputTexture.height;
+			if ( Height < 1 )
+				continue;
+
+			//	get the longest joint for this X
+			float BestJointLength = 0.0f;
+			int BestJointAng = -1;
+
 			for ( int angstep=0;	angstep<PixelsHeight;	angstep++ )
 			{
-				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
 				int p = x + (angstep*Width);
 				int r = SecondJointPixels[p].r;
-				int g = SecondJointPixels[p].g;
-				int b = SecondJointPixels[p].b;
-				int a = SecondJointPixels[p].a;
+				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
+
 				float JointLength = ( r / 255.0f) * MaxJointLength;
-				float Height = ( g / 255.0f ) * InputTexture.height;
-				if ( Height < 4 )
+				if ( JointLength < BestJointLength )
 					continue;
 
-				if ( JointLength < 4 )
-					continue;
-				//JointLength = 20;
+				BestJointLength = JointLength;
+				BestJointAng = angstep;
+			}
+
+			if ( BestJointAng < 0 )
+				continue;
+			if ( BestJointLength < 1 )
+				continue;
+
+			{
+				int angstep = BestJointAng;
+				int p = x + (angstep*Width);
+				int r = SecondJointPixels[p].r;
+				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
+				float JointLength = ( (float)r / 255.0f) * MaxJointLength;
+
+				//	gr: something wrong in this calc? half seems to look right
+				JointLength /= 2.0f;
+			
 				float AngleRad = radians(AngleDeg);
 				Vector2 AngleVector = new Vector2( Mathf.Sin(AngleRad), Mathf.Cos(AngleRad) );
 				AngleVector.Normalize();
@@ -256,6 +281,14 @@ public class FistDebug : MonoBehaviour {
 			return;
 
 
+		//	update mask test
+		if (mMaskTestMaterial == null)
+			return;
+		if ( mMaskTestTexture==null )
+			mMaskTestTexture = new RenderTexture( mInputTexture.width, mInputTexture.height, 0, RenderTextureFormat.ARGB32 );
+		Graphics.Blit (mInputTexture, mMaskTestTexture, mMaskTestMaterial);
+
+
 		if (mRayTexture == null || mRayMaterial == null)
 			return;
 		Graphics.Blit (mInputTexture, mRayTexture, mRayMaterial);
@@ -271,7 +304,8 @@ public class FistDebug : MonoBehaviour {
 
 		//	read joints
 
-		if (UnityEditor.EditorApplication.isPlaying && mJoints.Count== 0) {
+		//if (UnityEditor.EditorApplication.isPlaying && mJoints.Count== 0) 
+		{
 
 			if (mSecondJointTextureCopy == null) {
 				mSecondJointTextureCopy = new Texture2D (mSecondJointTexture.width, mSecondJointTexture.height, TextureFormat.ARGB32, false);
@@ -281,7 +315,7 @@ public class FistDebug : MonoBehaviour {
 			RenderTexture.active = null; 
 
 			Color32[] SecondJointPixels = mSecondJointTextureCopy.GetPixels32 ();
-			int MaxJointLength = 256;	//	in shader
+			int MaxJointLength = mSecondJointMaterial.GetInt("MaxJointLength");
 			float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 			float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 	
@@ -349,10 +383,11 @@ public class FistDebug : MonoBehaviour {
 		DrawTexture (0, 0, mInputTexture);
 		DrawTexture (1, 0, mRayTexture);
 		DrawTexture (1, 1, mSecondJointTexture);
-		//DrawTexture (0, 1, mSecondJointTextureCopy);
+		DrawTexture (0, 1, mMaskTestTexture);
+
 		for ( int i=0;	i<mJoints.Count;	i++ )
 		{
-			DrawJoint( mJoints[i], 0, 0 );
+			DrawJoint( mJoints[i], 0, 1 );
 		}
 
 		GUI.Label( GetScreenRect( 0, 1 ), "Joints: " + mJoints.Count );
