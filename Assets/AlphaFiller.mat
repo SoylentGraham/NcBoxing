@@ -130,6 +130,14 @@ Material:
         first:
           name: _Metallic
         second: 0
+      data:
+        first:
+          name: SampleRadius
+        second: 3
+      data:
+        first:
+          name: HitCountMin
+        second: 18
     m_Colors:
       data:
         first:

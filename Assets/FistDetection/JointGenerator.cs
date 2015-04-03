@@ -130,7 +130,7 @@ public class TJointCalculator
 				float JointLength = ( (float)r / 255.0f) * MaxJointLength;
 				
 				//	gr: something wrong in this calc? half seems to look right
-				JointLength /= 2.0f;
+			//	JointLength /= 2.0f;
 				
 				float AngleRad = radians(AngleDeg);
 				Vector2 AngleVector = new Vector2( Mathf.Sin(AngleRad), Mathf.Cos(AngleRad) );

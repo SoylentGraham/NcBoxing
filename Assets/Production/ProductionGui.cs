@@ -2,7 +2,6 @@
 using System.Collections;
 
 
-
 public class ProductionGui : MonoBehaviour {
 
 	public JointGenerator		mJointGenerator;
@@ -26,8 +25,10 @@ public class ProductionGui : MonoBehaviour {
 
 	// Update is called once per frame
 	void OnGUI () {
-	
-		Rect ScreenRect = new Rect (0, 0, Screen.width, Screen.height);
+		Camera camera = this.GetComponent<Camera> ();
+		if (!camera)
+			return;
+		Rect ScreenRect = camera.pixelRect;
 
 		if ( mMaskGenerator != null && mMaskGenerator.mInputTexture != null )
 			GUI.DrawTexture ( ScreenRect, mMaskGenerator.mMaskTexture);
