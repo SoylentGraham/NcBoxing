@@ -9,6 +9,8 @@
 	pass
 	{
 		CGPROGRAM
+		
+			#define UNITY_IOS
 
 			#pragma vertex vert
 			#pragma fragment frag
@@ -25,8 +27,16 @@
 
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
+			
+			const bool IncludeSelf = true;
+			
+			#if defined(UNITY_IOS)
+			const int SampleRadius = 1;
+			const int HitCountMin = 4;
+			#else
 			int SampleRadius;
 			int HitCountMin;
+			#endif
 
 
 			FragInput vert(VertexInput In) {
@@ -62,19 +72,20 @@
 							
 				return HitCount;
 			}
+			
+			int GetSampleTestCount(int Radius)
+			{
+				int TotalTests = 0;
+				for ( int i=1;	i<Radius;	i++ )
+					TotalTests += (i*2) + (i*2) + ((i*2)-2) + ((i*2)-2) + 4; 
+				return TotalTests;
+			}
 							
 			float4 frag(FragInput In) : SV_Target 
 			{
 				float4 Sample = tex2D( _MainTex, In.uv_MainTex );
-				
-				//	gr: don't do this to remove noise
-				//	already alpha
-			//	if ( Sample.w > 0 )
-			//		return Sample;
-	
-				//	should we be alpha?
-				//int HitCount = Sample.w>0 ? 1 : 0;
-				int HitCount = 0;
+			
+				int HitCount = (IncludeSelf && Sample.w>0) ? 1 : 0;
 				for ( int r=1;	r<=SampleRadius;	r++ )
 					HitCount += GetRadiusHitCount(r, In );
 			

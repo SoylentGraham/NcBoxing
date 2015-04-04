@@ -37,7 +37,7 @@ public class TJointCalculator
 	{
 	}
 
-	public List<TJoint> CalculateJoints(Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial)
+	public List<TJoint> CalculateJoints(Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial,int MaxColumnTest)
 	{
 		if (MaskTexture == null)
 			return null;
@@ -57,7 +57,6 @@ public class TJointCalculator
 		mSecondJointTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mSecondJointTexture, mSecondJointMaterial);
 		
-		
 		//	calc joints frmo pixel data
 		if (mSecondJointTextureCopy == null) {
 			mSecondJointTextureCopy = new Texture2D (mSecondJointTexture.width, mSecondJointTexture.height, TextureFormat.ARGB32, false);
@@ -72,11 +71,11 @@ public class TJointCalculator
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 		
-		return CalculateJoints (SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax);
+		return CalculateJoints (SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest);
 	}
 	
 	
-	List<TJoint> CalculateJoints(Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax)
+	List<TJoint> CalculateJoints(Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest)
 	{
 		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
@@ -89,10 +88,25 @@ public class TJointCalculator
 		
 		//	should match mSecondJointTexture.height
 		int PixelsHeight = PixelCount / Width;
-		
+
+		MaxColumnTest = Mathf.Min(Width, MaxColumnTest);
+		List<int> Columns = new List<int> ();
+		for (int c=0; c<MaxColumnTest; c++) {
+			float xf = (c / (float)MaxColumnTest) * Width;
+			int x = Mathf.FloorToInt (xf);
+
+			//	don't add dupes
+			if (Columns.Count > 0)
+			if (Columns [Columns.Count - 1] == x)
+				continue;
+			Columns.Add (x);
+		}
+
 		//	gr: could probbaly be more cache friendly by approaching this row-by-row...
-		for (int x=0; x<Width; x++) 
+		for (int xi=0; xi<Columns.Count; xi++) 
 		{
+			int x = Columns[xi];
+
 			//	height is the same for each angle so we can skip that quick
 			int g = SecondJointPixels[x].g;	//	x+angstep*width == x
 			float Height = ( g / 255.0f ) * InputTexture.height;
@@ -164,6 +178,7 @@ public class JointGenerator : MonoBehaviour {
 	private TJointCalculator	mJointCalculator = new TJointCalculator();
 	public Texture			mMaskTexture;
 	public List<TJoint>		mJoints = new List<TJoint>();
+	public int				mMaxColumnTest = 50;
 
 	void OnDisable()
 	{
@@ -181,7 +196,7 @@ public class JointGenerator : MonoBehaviour {
 			mJointCalculator = new TJointCalculator ();
 		}
 		
-		mJoints = mJointCalculator.CalculateJoints (mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial);
+		mJoints = mJointCalculator.CalculateJoints (mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest);
 	}
 	
 }

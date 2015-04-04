@@ -133,11 +133,11 @@ Material:
       data:
         first:
           name: SampleRadius
-        second: 3
+        second: 1
       data:
         first:
           name: HitCountMin
-        second: 18
+        second: 4
     m_Colors:
       data:
         first:

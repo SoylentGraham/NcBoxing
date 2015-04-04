@@ -12,6 +12,13 @@ public class MaskGenerator : MonoBehaviour {
 	private RenderTextureFormat	mTempTextureFormat = RenderTextureFormat.ARGB32;
 	private FilterMode			mTempTextureFilterMode = FilterMode.Point;
 	public Material				mSubtractFillMaterial;
+	private RenderTexture		mFillTempTexture;
+
+
+	void OnDisable()
+	{
+		mFillTempTexture = null;
+	}
 
 	void Update () {
 
@@ -29,50 +36,26 @@ public class MaskGenerator : MonoBehaviour {
 
 		//	do a fill to remove noise etc
 		if (mSubtractFillMaterial != null) {
-			RenderTexture FillTempTexture = RenderTexture.GetTemporary (mInputTexture.width, mInputTexture.height, 0, mTempTextureFormat);
-			FillTempTexture.filterMode = mTempTextureFilterMode;
-			FillTempTexture.DiscardContents();
-			Graphics.Blit (SubtractTempTexture, FillTempTexture, mSubtractFillMaterial);
-			SubtractTempTexture.DiscardContents();
-			mMaskTexture.DiscardContents();
-			Graphics.Blit (FillTempTexture, mMaskTexture);
-			RenderTexture.ReleaseTemporary (FillTempTexture);
-		} else {
+
+			if ( !mFillTempTexture )
+			{
+				mFillTempTexture = new RenderTexture(mInputTexture.width, mInputTexture.height, 0, mTempTextureFormat);
+				mFillTempTexture.filterMode = mTempTextureFilterMode;
+			}
+			//FillTempTexture.DiscardContents();
+			Graphics.Blit (SubtractTempTexture, mFillTempTexture, mSubtractFillMaterial);
+			//SubtractTempTexture.DiscardContents();
+			//mMaskTexture.DiscardContents();
+			Graphics.Blit (mFillTempTexture, mMaskTexture);
+
+		} else 
+
+		{
 			Graphics.Blit( SubtractTempTexture, mMaskTexture );
 		}
 
 		SubtractTempTexture.DiscardContents ();
 		RenderTexture.ReleaseTemporary (SubtractTempTexture);
 	}
-
-	/*
 	
-	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,ref RenderTexture TempTexture)
-	{
-		if (LiveTexture == null)
-			return;
-		if (BackgroundTexture == null)
-			return;
-		if (mSubtractMaterial == null)
-			return;
-		if (TempTexture == null) {
-			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
-			TempTexture.filterMode = mTempTextureFilterMode;
-		}
-		
-		mSubtractMaterial.SetTexture ("LastBackgroundTex",BackgroundTexture);
-		Graphics.Blit (LiveTexture, TempTexture, mSubtractMaterial);
-		
-		//	do a fill
-		if (mSubtractFillMaterial != null) {
-			RenderTexture FillTempTexture = RenderTexture.GetTemporary(LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
-			FillTempTexture.filterMode = mTempTextureFilterMode;
-			Graphics.Blit( TempTexture, FillTempTexture, mSubtractFillMaterial );
-			Graphics.Blit( FillTempTexture, TempTexture );
-			RenderTexture.ReleaseTemporary( FillTempTexture);
-		}
-		
-	}
-*/
-
 }

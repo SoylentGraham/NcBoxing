@@ -6,6 +6,7 @@ public class WebcamTextureManager : MonoBehaviour {
 	private WebCamTexture	mWebcamTexture;
 	public string DeviceName = "";
 	public RenderTexture	mOutputTexture;
+	public Shader			mFlipShader;
 
 	// Use this for initialization
 	void Start () {
@@ -46,7 +47,16 @@ public class WebcamTextureManager : MonoBehaviour {
 
 		if (mOutputTexture && mWebcamTexture) {
 			mOutputTexture.DiscardContents();
-			Graphics.Blit (mWebcamTexture, mOutputTexture);
+
+			//	ios camera seems to be upside down...
+			bool Flip = false;
+#if UNITY_IOS
+			Flip = (mFlipShader != null);
+#endif
+			if ( Flip )
+				Graphics.Blit (mWebcamTexture, mOutputTexture, new Material(mFlipShader) );
+			else
+				Graphics.Blit (mWebcamTexture, mOutputTexture );
 		}
 	}
 

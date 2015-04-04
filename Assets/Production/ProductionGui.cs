@@ -7,17 +7,25 @@ public class ProductionGui : MonoBehaviour {
 	public JointGenerator		mJointGenerator;
 	public MaskGenerator		mMaskGenerator;
 	public BackgroundLearner	mBackgroundLearner;
+	public Texture				mCameraTexture;
+	private float				mResetCountdownInterval = 5.0f;
+	private float				mResetCountdown = 0.0f;
+	private int					mRenderJointIndex = 0;
 
-
-	// Use this for initialization
-	void Start () {
-	
-	}
 
 	void Update()
 	{
+		bool Reset = Input.GetMouseButtonDown (0);
+
+		//	every so often, reset for testing
+		mResetCountdown -= Time.deltaTime;
+		if (mResetCountdown < 0.0f) {
+			Reset = true;
+			mResetCountdown = mResetCountdownInterval;
+		}
+
 		//	reset
-		if (Input.GetMouseButtonDown (0)) {
+		if (Reset) {
 			if (mBackgroundLearner != null)
 				mBackgroundLearner.OnDisable ();
 		}
@@ -28,16 +36,26 @@ public class ProductionGui : MonoBehaviour {
 		Camera camera = this.GetComponent<Camera> ();
 		if (!camera)
 			return;
+
 		Rect ScreenRect = camera.pixelRect;
 
-		if ( mMaskGenerator != null && mMaskGenerator.mInputTexture != null )
-			GUI.DrawTexture ( ScreenRect, mMaskGenerator.mMaskTexture);
+		Texture BackgroundTexture = mCameraTexture;
+		if (BackgroundTexture == null && mBackgroundLearner != null && mBackgroundLearner.mBackgroundTexture != null)
+			BackgroundTexture = mBackgroundLearner.mBackgroundTexture;
+
+		if ( BackgroundTexture )
+			GUI.DrawTexture ( ScreenRect, BackgroundTexture);
 
 		//	render joints
-		if (mJointGenerator != null) {
-			for (int i=0; mJointGenerator.mJoints!=null && i<mJointGenerator.mJoints.Count; i++) {
-				JointDebug.DrawJoint (mJointGenerator.mJoints [i], ScreenRect );
+		if (mJointGenerator != null && mJointGenerator.mJoints!=null)
+		{
+			mRenderJointIndex = (mRenderJointIndex+1) % Mathf.Max(mJointGenerator.mJoints.Count,1);
+
+			for (int i=0; i<mJointGenerator.mJoints.Count; i++) {
+				if ( mRenderJointIndex == i )
+					JointDebug.DrawJoint (mJointGenerator.mJoints [i], ScreenRect );
 			}
 		}
+	
 	}
 }
