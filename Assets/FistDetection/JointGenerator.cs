@@ -226,6 +226,7 @@ public class JointGenerator : MonoBehaviour {
 	public int				mMaxColumnTest = 50;
 	public TextureFormat	mReadBackFormat = TextureFormat.ARGB32;
 	public string 			mDebug;
+	public bool				mDebugJoint = true;
 
 	public Texture2D GetCopyTexture()
 	{
@@ -250,8 +251,17 @@ public class JointGenerator : MonoBehaviour {
 		if (mJointCalculator == null) {
 			mJointCalculator = new TJointCalculator ();
 		}
-		
-		mJoints = mJointCalculator.CalculateJoints ( ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat );
+
+		if (mDebugJoint) {
+			TJoint joint = new TJoint ();
+			joint.mStart = new float2 (0, 0);
+			joint.mMiddle = new float2 (0.2f, 0.2f);
+			joint.mEnd = new float2 (0.4f, 0.5f);
+			mJoints = new List<TJoint> ();
+			mJoints.Add (joint);
+		} else {
+			mJoints = mJointCalculator.CalculateJoints (ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat);
+		}
 	}
 	
 }

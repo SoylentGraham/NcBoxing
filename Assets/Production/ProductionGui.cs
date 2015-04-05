@@ -11,7 +11,8 @@ public class ProductionGui : MonoBehaviour {
 	private float				mResetCountdownInterval = 5.0f;
 	private float				mResetCountdown = 0.0f;
 	private int					mRenderJointIndex = 0;
-
+	[Range(0,1)]
+	public float 				mBackgroundAlpha = 0.5f;
 
 	void Update()
 	{
@@ -46,8 +47,12 @@ public class ProductionGui : MonoBehaviour {
 		if (BackgroundTexture == null && mJointGenerator != null )
 			BackgroundTexture = mJointGenerator.GetCopyTexture();
 
-		if ( BackgroundTexture )
-			GUI.DrawTexture ( ScreenRect, BackgroundTexture);
+		if (BackgroundTexture) {
+			var OldColour = GUI.color;
+			GUI.color = new Color(1,1,1,mBackgroundAlpha);
+			GUI.DrawTexture (ScreenRect, BackgroundTexture);
+			GUI.color = OldColour;
+		}
 
 		//	render joints
 		if (mJointGenerator != null && mJointGenerator.mJoints!=null)
