@@ -43,6 +43,9 @@ public class ProductionGui : MonoBehaviour {
 		if (BackgroundTexture == null && mBackgroundLearner != null && mBackgroundLearner.mBackgroundTexture != null)
 			BackgroundTexture = mBackgroundLearner.mBackgroundTexture;
 
+		if (BackgroundTexture == null && mJointGenerator != null )
+			BackgroundTexture = mJointGenerator.GetCopyTexture();
+
 		if ( BackgroundTexture )
 			GUI.DrawTexture ( ScreenRect, BackgroundTexture);
 
@@ -57,5 +60,8 @@ public class ProductionGui : MonoBehaviour {
 			}
 		}
 	
+		if (mJointGenerator) {
+			GUI.Label (ScreenRect, mJointGenerator.mDebug);
+		}
 	}
 }

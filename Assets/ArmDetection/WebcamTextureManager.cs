@@ -50,7 +50,7 @@ public class WebcamTextureManager : MonoBehaviour {
 
 			//	ios camera seems to be upside down...
 			bool Flip = false;
-#if UNITY_IOS
+#if UNITY_IOS && !UNITY_EDITOR
 			Flip = (mFlipShader != null);
 #endif
 			if ( Flip )

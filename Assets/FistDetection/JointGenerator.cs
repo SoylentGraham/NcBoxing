@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 
 public struct float2
 {
@@ -27,7 +27,18 @@ public struct TJoint
 public class TJointCalculator
 {
 	private Texture2D		mSecondJointTextureCopy;
-	
+
+#if UNITY_IOS && !UNITY_EDITOR
+	[DllImport("__Internal", CallingConvention = CallingConvention.Cdecl)]
+	//[DllImport("__Internal")]
+	public static extern bool PopReadPixels(System.IntPtr TextureId,ref Color32[] Colours,int TextureWidth,int TextureHeight);
+#endif
+
+	public Texture2D GetCopyTexture()
+	{
+		return mSecondJointTextureCopy;
+	}
+
 	float radians(float Degrees)
 	{
 		return Degrees * Mathf.Deg2Rad;
@@ -37,8 +48,39 @@ public class TJointCalculator
 	{
 	}
 
-	public List<TJoint> CalculateJoints(Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial,int MaxColumnTest)
+
+	bool GetRenderTexturePixels(ref Color32[] Colours,RenderTexture SourceTexture,TextureFormat ReadBackFormat)
 	{
+		//	gr: currently crashing when returning out of func...
+#if UNITY_IOS && !UNITY_EDITOR && FALSE
+		if ( Colours == null )
+			Colours = new Color32[ SourceTexture.width * SourceTexture.height ];
+
+	//	RenderTexture.active = SourceTexture;
+		//	use my plugin
+		bool result = PopReadPixels( SourceTexture.GetNativeTexturePtr(), ref Colours, SourceTexture.width, SourceTexture.height );
+	//	RenderTexture.active = null; 
+
+		return result;
+#else
+		//	calc joints frmo pixel data
+		if (mSecondJointTextureCopy == null) {
+			mSecondJointTextureCopy = new Texture2D (SourceTexture.width, SourceTexture.height, ReadBackFormat, false);
+		}
+		RenderTexture.active = SourceTexture;
+		mSecondJointTextureCopy.ReadPixels (new Rect (0, 0, SourceTexture.width, SourceTexture.height), 0, 0);
+		mSecondJointTextureCopy.Apply (true);
+		RenderTexture.active = null; 
+		//DebugOut += mSecondJointTextureCopy.GetPixel (0, 0) + "\n";
+		
+		Colours = mSecondJointTextureCopy.GetPixels32();
+		return true;
+#endif
+	}
+
+	public List<TJoint> CalculateJoints(ref string DebugOut,Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial,int MaxColumnTest,TextureFormat ReadBackFormat)
+	{
+		DebugOut = "";
 		if (MaskTexture == null)
 			return null;
 		
@@ -48,34 +90,30 @@ public class TJointCalculator
 		mRayTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mRayTexture, mRayMaterial);
 		
-		
-		
+
 		if (mSecondJointTexture == null || mSecondJointMaterial == null)
 			return null;
 		mSecondJointMaterial.SetTexture ("_RayTex", mRayTexture);
 		mSecondJointMaterial.SetInt ("TargetHeight", mSecondJointTexture.height);
 		mSecondJointTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mSecondJointTexture, mSecondJointMaterial);
-		
-		//	calc joints frmo pixel data
-		if (mSecondJointTextureCopy == null) {
-			mSecondJointTextureCopy = new Texture2D (mSecondJointTexture.width, mSecondJointTexture.height, TextureFormat.ARGB32, false);
+
+
+		Color32[] SecondJointPixels = null;
+		if (!GetRenderTexturePixels (ref SecondJointPixels, mSecondJointTexture, ReadBackFormat)) {
+			DebugOut += "Failed to read render texture pixels";
+			return null;
 		}
-		
-		RenderTexture.active = mSecondJointTexture;
-		mSecondJointTextureCopy.ReadPixels (new Rect (0, 0, mSecondJointTexture.width, mSecondJointTexture.height), 0, 0);
-		RenderTexture.active = null; 
-		
-		Color32[] SecondJointPixels = mSecondJointTextureCopy.GetPixels32 ();
+
 		int MaxJointLength = mSecondJointMaterial.GetInt("MaxJointLength");
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
-		
-		return CalculateJoints (SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest);
+
+		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest);
 	}
 	
 	
-	List<TJoint> CalculateJoints(Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest)
+	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest)
 	{
 		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
@@ -102,13 +140,18 @@ public class TJointCalculator
 			Columns.Add (x);
 		}
 
+		DebugOut += SecondJointPixels [0 + (0 * InputTexture.width)] + "\n";
+		DebugOut += SecondJointPixels [0 + ((InputTexture.height/2) * InputTexture.width)] + "\n";
+		DebugOut += SecondJointPixels [0 + ((InputTexture.height-1) * InputTexture.width)] + "\n";
+
 		//	gr: could probbaly be more cache friendly by approaching this row-by-row...
 		for (int xi=0; xi<Columns.Count; xi++) 
 		{
 			int x = Columns[xi];
+			Color32 ColPixel = SecondJointPixels[x];
 
 			//	height is the same for each angle so we can skip that quick
-			int g = SecondJointPixels[x].g;	//	x+angstep*width == x
+			int g = ColPixel.g;	//	x+angstep*width == x
 			float Height = ( g / 255.0f ) * InputTexture.height;
 			if ( Height < 1 )
 				continue;
@@ -120,7 +163,8 @@ public class TJointCalculator
 			for ( int angstep=0;	angstep<PixelsHeight;	angstep++ )
 			{
 				int p = x + (angstep*Width);
-				int r = SecondJointPixels[p].r;
+				Color32 Pixel = SecondJointPixels[p];
+				int r = Pixel.r;
 			//	float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
 				
 				float JointLength = ( r / 255.0f) * MaxJointLength;
@@ -139,7 +183,8 @@ public class TJointCalculator
 			{
 				int angstep = BestJointAng;
 				int p = x + (angstep*Width);
-				int r = SecondJointPixels[p].r;
+				Color32 Pixel = SecondJointPixels[p];
+				int r = Pixel.r;
 				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
 				float JointLength = ( (float)r / 255.0f) * MaxJointLength;
 				
@@ -179,6 +224,14 @@ public class JointGenerator : MonoBehaviour {
 	public Texture			mMaskTexture;
 	public List<TJoint>		mJoints = new List<TJoint>();
 	public int				mMaxColumnTest = 50;
+	public TextureFormat	mReadBackFormat = TextureFormat.ARGB32;
+	public string 			mDebug;
+
+	public Texture2D GetCopyTexture()
+	{
+		return mJointCalculator !=null ? mJointCalculator.GetCopyTexture() : null;
+	}
+
 
 	void OnDisable()
 	{
@@ -188,7 +241,9 @@ public class JointGenerator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+
+		//	yield return new WaitForEndOfFrame();
+
 		if (mMaskTexture == null)
 			return;
 		
@@ -196,7 +251,7 @@ public class JointGenerator : MonoBehaviour {
 			mJointCalculator = new TJointCalculator ();
 		}
 		
-		mJoints = mJointCalculator.CalculateJoints (mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest);
+		mJoints = mJointCalculator.CalculateJoints ( ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat );
 	}
 	
 }
