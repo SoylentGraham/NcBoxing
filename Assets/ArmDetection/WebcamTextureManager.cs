@@ -7,10 +7,15 @@ public class WebcamTextureManager : MonoBehaviour {
 	public string DeviceName = "";
 	public RenderTexture	mOutputTexture;
 	public Shader			mFlipShader;
+	public bool				mFlip = false;
+	public bool				mMirror = true;
 
 	// Use this for initialization
 	void Start () {
-	
+		#if UNITY_IOS && !UNITY_EDITOR
+		mFlip =  true;
+		#endif
+
 
 	}
 	
@@ -49,14 +54,17 @@ public class WebcamTextureManager : MonoBehaviour {
 			mOutputTexture.DiscardContents();
 
 			//	ios camera seems to be upside down...
-			bool Flip = false;
-#if UNITY_IOS && !UNITY_EDITOR
-			Flip = (mFlipShader != null);
-#endif
-			if ( Flip )
-				Graphics.Blit (mWebcamTexture, mOutputTexture, new Material(mFlipShader) );
+			if ( mFlipShader )
+			{
+				Material FlipMat = new Material( mFlipShader );
+				FlipMat.SetInt("Flip", mFlip?1:0 );
+				FlipMat.SetInt("Mirror",mMirror?1:0 );
+				Graphics.Blit (mWebcamTexture, mOutputTexture, FlipMat );
+			}
 			else
+			{
 				Graphics.Blit (mWebcamTexture, mOutputTexture );
+			}
 		}
 	}
 

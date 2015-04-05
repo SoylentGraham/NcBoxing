@@ -140,11 +140,11 @@ Material:
       data:
         first:
           name: AngleDegMin
-        second: -114
+        second: -53
       data:
         first:
           name: AngleDegMax
-        second: 116
+        second: 59
       data:
         first:
           name: MaxJointLength

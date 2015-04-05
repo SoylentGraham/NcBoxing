@@ -43,6 +43,9 @@
 			
 			int GetColumnHeight(float s)
 			{
+				if ( s > 0.3f && s < 0.7f )
+				return 0;
+				
 				int Height = _MainTex_TexelSize.w;
 				for ( int i=0;	i<Height;	i++)
 				{

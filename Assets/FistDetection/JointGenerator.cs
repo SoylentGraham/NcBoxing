@@ -13,6 +13,8 @@ public struct float2
 		x = _x;
 		y = _y;
 	}
+
+
 };
 
 public struct TJoint
@@ -20,6 +22,13 @@ public struct TJoint
 	public float2	mStart;
 	public float2	mMiddle;
 	public float2	mEnd;
+
+	public float	Length()
+	{
+		Vector2 a = new Vector2 (mMiddle.x - mStart.x, mMiddle.y - mStart.y);
+		Vector2 b = new Vector2 (mEnd.x - mMiddle.x, mEnd.y - mMiddle.y);
+		return a.magnitude + b.magnitude;
+	}
 };
 
 
@@ -226,7 +235,8 @@ public class JointGenerator : MonoBehaviour {
 	public int				mMaxColumnTest = 50;
 	public TextureFormat	mReadBackFormat = TextureFormat.ARGB32;
 	public string 			mDebug;
-	public bool				mDebugJoint = true;
+	public bool				mDebugJoint = false;
+	public bool				mBestJointOnly = true;
 
 	public Texture2D GetCopyTexture()
 	{
@@ -261,6 +271,22 @@ public class JointGenerator : MonoBehaviour {
 			mJoints.Add (joint);
 		} else {
 			mJoints = mJointCalculator.CalculateJoints (ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat);
+
+			//	filter out best
+			int Best = 0;
+			for ( int i=1;	i<mJoints.Count;	i++ )
+			{
+				if ( mJoints[i].Length() > mJoints[Best].Length() )
+					Best = i;
+			}
+
+			if ( mJoints.Count > 0 )
+			{
+				TJoint joint = mJoints[Best];
+				mJoints.Clear();
+				mJoints.Add( joint );
+			}
+
 		}
 	}
 	
