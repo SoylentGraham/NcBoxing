@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class IKLimb: MonoBehaviour {
+public class IKLimb_BrunoFerreira : MonoBehaviour {
 	public Transform upperArm, forearm, hand;
 	public Transform target, elbowTarget;
 	
