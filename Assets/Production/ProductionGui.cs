@@ -10,7 +10,9 @@ public class ProductionGui : MonoBehaviour {
 	public Texture				mCameraTexture;
 	private float				mResetCountdownInterval = 5.0f;
 	private float				mResetCountdown = 0.0f;
-	private int					mRenderJointIndex = 0;
+	private int					mCycleJointIndex = 0;
+	public bool					mCycleJoints = false;
+
 	[Range(0,1)]
 	public float 				mBackgroundAlpha = 0.5f;
 
@@ -57,10 +59,10 @@ public class ProductionGui : MonoBehaviour {
 		//	render joints
 		if (mJointGenerator != null && mJointGenerator.mJoints!=null)
 		{
-			mRenderJointIndex = (mRenderJointIndex+1) % Mathf.Max(mJointGenerator.mJoints.Count,1);
+			mCycleJointIndex = (mCycleJointIndex+1) % Mathf.Max(mJointGenerator.mJoints.Count,1);
 
 			for (int i=0; i<mJointGenerator.mJoints.Count; i++) {
-				if ( mRenderJointIndex == i )
+				if ( mCycleJointIndex == i || !mCycleJoints )
 					JointDebug.DrawJoint (mJointGenerator.mJoints [i], ScreenRect );
 			}
 		}

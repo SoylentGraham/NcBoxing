@@ -236,7 +236,7 @@ public class JointGenerator : MonoBehaviour {
 	public TextureFormat	mReadBackFormat = TextureFormat.ARGB32;
 	public string 			mDebug;
 	public bool				mDebugJoint = false;
-	public bool				mBestJointOnly = true;
+	public bool				mBestJointOnly = false;
 
 	public Texture2D GetCopyTexture()
 	{
@@ -272,21 +272,23 @@ public class JointGenerator : MonoBehaviour {
 		} else {
 			mJoints = mJointCalculator.CalculateJoints (ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat);
 
+			if ( mBestJointOnly )
+			{
 			//	filter out best
-			int Best = 0;
-			for ( int i=1;	i<mJoints.Count;	i++ )
-			{
-				if ( mJoints[i].Length() > mJoints[Best].Length() )
-					Best = i;
-			}
+				int Best = 0;
+				for ( int i=1;	i<mJoints.Count;	i++ )
+				{
+					if ( mJoints[i].Length() > mJoints[Best].Length() )
+						Best = i;
+				}
 
-			if ( mJoints.Count > 0 )
-			{
-				TJoint joint = mJoints[Best];
-				mJoints.Clear();
-				mJoints.Add( joint );
+				if ( mJoints.Count > 0 )
+				{
+					TJoint joint = mJoints[Best];
+					mJoints.Clear();
+					mJoints.Add( joint );
+				}
 			}
-
 		}
 	}
 	
