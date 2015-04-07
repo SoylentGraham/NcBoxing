@@ -23,7 +23,7 @@
 
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
-			const int RayPad = 2;
+			const int RayPad = 5;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -60,9 +60,9 @@
 			float4 frag(FragInput In) : SV_Target 
 			{
 				int Height = GetColumnHeight( In.uv_MainTex.x );
-				Height /= 2;
+			//	Height /= 2;
 				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
-				return float4( HeightNorm, 0, 0, 1.0f );
+				return float4( HeightNorm, 0, 0, 1 );
 			}
 		ENDCG
 	}

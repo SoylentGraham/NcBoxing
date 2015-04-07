@@ -21,8 +21,10 @@ public struct TJoint
 {
 	public float2	mStart;
 	public float2	mMiddle;
-	public float2	mEnd;
-
+	public float2	mRayEnd;	//	ray-calculated end
+	public float2	mEnd;		//	cross adjusted end
+	public float	mEndRadius;
+	
 	public float	Length()
 	{
 		Vector2 a = new Vector2 (mMiddle.x - mStart.x, mMiddle.y - mStart.y);
@@ -87,7 +89,7 @@ public class TJointCalculator
 #endif
 	}
 
-	public List<TJoint> CalculateJoints(ref string DebugOut,Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial,int MaxColumnTest,TextureFormat ReadBackFormat)
+	public List<TJoint> CalculateJoints(ref string DebugOut,Texture MaskTexture,RenderTexture mRayTexture,Material mRayMaterial,RenderTexture mSecondJointTexture,Material mSecondJointMaterial,int MaxColumnTest,TextureFormat ReadBackFormat,int MinJointLength)
 	{
 		DebugOut = "";
 		if (MaskTexture == null)
@@ -103,7 +105,6 @@ public class TJointCalculator
 		if (mSecondJointTexture == null || mSecondJointMaterial == null)
 			return null;
 		mSecondJointMaterial.SetTexture ("_RayTex", mRayTexture);
-		mSecondJointMaterial.SetInt ("TargetHeight", mSecondJointTexture.height);
 		mSecondJointTexture.DiscardContents ();
 		Graphics.Blit (MaskTexture, mSecondJointTexture, mSecondJointMaterial);
 
@@ -118,11 +119,11 @@ public class TJointCalculator
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 
-		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest);
+		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength);
 	}
 	
 	
-	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest)
+	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength)
 	{
 		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
@@ -160,8 +161,7 @@ public class TJointCalculator
 			Color32 ColPixel = SecondJointPixels[x];
 
 			//	height is the same for each angle so we can skip that quick
-			int g = ColPixel.g;	//	x+angstep*width == x
-			float Height = ( g / 255.0f ) * InputTexture.height;
+			float Height = ( ColPixel.a / 255.0f ) * InputTexture.height;
 			if ( Height < 1 )
 				continue;
 			
@@ -173,10 +173,10 @@ public class TJointCalculator
 			{
 				int p = x + (angstep*Width);
 				Color32 Pixel = SecondJointPixels[p];
-				int r = Pixel.r;
+				int pixr = Pixel.r;
 			//	float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
 				
-				float JointLength = ( r / 255.0f) * MaxJointLength;
+				float JointLength = ( pixr / 255.0f) * MaxJointLength;
 				if ( JointLength < BestJointLength )
 					continue;
 				
@@ -186,30 +186,37 @@ public class TJointCalculator
 			
 			if ( BestJointAng < 0 )
 				continue;
-			if ( BestJointLength < 1 )
+			if ( BestJointLength < MinJointLength )
 				continue;
 			
 			{
 				int angstep = BestJointAng;
 				int p = x + (angstep*Width);
 				Color32 Pixel = SecondJointPixels[p];
-				int r = Pixel.r;
 				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
-				float JointLength = ( (float)r / 255.0f) * MaxJointLength;
-				
+
+				float JointLength = ( (float)Pixel.r / 255.0f) * MaxJointLength;
+				float PanLength = ( (float)Pixel.g / 255.0f) * MaxJointLength;
+				float RadiusLength = ( (float)Pixel.b / 255.0f) * MaxJointLength;
+
 				//	gr: something wrong in this calc? half seems to look right
-			//	JointLength /= 2.0f;
+				JointLength /= 512.0f / 128.0f;
+				RadiusLength /= 512.0f / 128.0f;
 				
 				float AngleRad = radians(AngleDeg);
 				Vector2 AngleVector = new Vector2( Mathf.Sin(AngleRad), Mathf.Cos(AngleRad) );
 				AngleVector.Normalize();
+				Vector2 LeftVector = new Vector2( AngleVector.y, -AngleVector.x ); 
 				AngleVector *= JointLength;
+
 				
 				float2 UvScalar = new float2( 1.0f / InputTexture.width, 1.0f / InputTexture.height );
 				TJoint joint = new TJoint();
 				joint.mStart = new float2( x*UvScalar.x, 0 );
 				joint.mMiddle = new float2( x*UvScalar.x, Height*UvScalar.y );
-				joint.mEnd = new float2( joint.mMiddle.x + (AngleVector.x*UvScalar.x), joint.mMiddle.y + (AngleVector.y*UvScalar.y) );
+				joint.mRayEnd = new float2( joint.mMiddle.x + (AngleVector.x*UvScalar.x), joint.mMiddle.y + (AngleVector.y*UvScalar.y) );
+				joint.mEnd = new float2( joint.mRayEnd.x + (LeftVector.x * PanLength), joint.mRayEnd.y + (LeftVector.y * PanLength) );
+				joint.mEndRadius = RadiusLength;
 				Joints.Add( joint );
 				
 				if ( Joints.Count >= MaxJoints )
@@ -237,6 +244,7 @@ public class JointGenerator : MonoBehaviour {
 	public string 			mDebug;
 	public bool				mDebugJoint = false;
 	public bool				mBestJointOnly = false;
+	public int				mMinJointLength = 1;
 
 	public Texture2D GetCopyTexture()
 	{
@@ -270,7 +278,7 @@ public class JointGenerator : MonoBehaviour {
 			mJoints = new List<TJoint> ();
 			mJoints.Add (joint);
 		} else {
-			mJoints = mJointCalculator.CalculateJoints (ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat);
+			mJoints = mJointCalculator.CalculateJoints (ref mDebug, mMaskTexture, mRayTexture, mRayMaterial, mSecondJointTexture, mSecondJointMaterial, mMaxColumnTest, mReadBackFormat, mMinJointLength );
 
 			if ( mBestJointOnly )
 			{

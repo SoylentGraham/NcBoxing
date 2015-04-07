@@ -21,6 +21,20 @@ public static class GuiHelper
 	{
 		DrawLine(lineStart, lineEnd, color, 1);
 	}
+
+	//	draw circle around point
+	public static void DrawCircle(Vector2 Center, float Radius, Color color,int Segments=10)
+	{
+		float AngStep = 360.0f / (float)Segments;
+		for (float a=0; a<=360.0f+AngStep; a+=AngStep) {
+			float a_rad = Mathf.Deg2Rad * a;
+			float b_rad = Mathf.Deg2Rad * (a+AngStep);
+			var aOff = new Vector2( Mathf.Cos (a_rad) * Radius, Mathf.Sin (a_rad) * Radius );
+			var bOff = new Vector2( Mathf.Cos (b_rad) * Radius, Mathf.Sin (b_rad) * Radius );
+			DrawLine ( Center+aOff, Center+bOff, color, 1);
+		}
+	}
+
 	
 	/// <summary>
 	/// Draw a line between two points with the specified color and thickness
@@ -210,13 +224,16 @@ public class JointDebug : MonoBehaviour {
 	{
 		Vector2 Start = new Vector2 (joint.mStart.x, joint.mStart.y);
 		Vector2 Middle = new Vector2 (joint.mMiddle.x, joint.mMiddle.y);
+		Vector2 RayEnd = new Vector2 (joint.mRayEnd.x, joint.mRayEnd.y);
 		Vector2 End = new Vector2 (joint.mEnd.x, joint.mEnd.y);
 		FitToRect( ref Start, ScreenRect );
 		FitToRect( ref Middle, ScreenRect );
+		FitToRect( ref RayEnd, ScreenRect );
 		FitToRect( ref End, ScreenRect );
-		
+
 		GuiHelper.DrawLine( Start, Middle, Color.red );
-		GuiHelper.DrawLine( Middle, End, Color.green );
+		GuiHelper.DrawLine( Middle, RayEnd, Color.green );
+		GuiHelper.DrawCircle (End, joint.mEndRadius, Color.magenta);
 	}
 
 	void Update()

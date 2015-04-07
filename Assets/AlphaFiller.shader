@@ -10,7 +10,7 @@
 	{
 		CGPROGRAM
 		
-			#define UNITY_IOS
+		//	#define UNITY_IOS
 
 			#pragma vertex vert
 			#pragma fragment frag

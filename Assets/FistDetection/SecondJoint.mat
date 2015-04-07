@@ -140,15 +140,15 @@ Material:
       data:
         first:
           name: AngleDegMin
-        second: -53
+        second: -108
       data:
         first:
           name: AngleDegMax
-        second: 59
+        second: 107
       data:
         first:
           name: MaxJointLength
-        second: 256
+        second: 600
     m_Colors:
       data:
         first:

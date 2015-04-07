@@ -31,7 +31,7 @@
 			float AngleDegMin;
 			float AngleDegMax;
 			int MaxJointLength;
-			const int RayPad = 3;
+			const int RayPad = 20;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -51,23 +51,42 @@
 				return ( Alpha > 0.5f );
 			}
 		
-			int GetRayLength(float2 StartUv,float AngleDeg)
+			int GetRayLength(float2 StartUv,float2 AngleStep,int Border)
 			{
-				//	angles seem to be backwards to renderer...
-				AngleDeg += 0.0f;
+				for ( int i=0;	i<MaxJointLength;	i++ )
+				{
+					float2 Delta = AngleStep * (float)i;
+					if ( !IsMask( StartUv + Delta ) )
+						return max( (i-1)-Border, 0 );
+				}
+				int i = MaxJointLength;
+				return max( (i-1)-Border,0);
+			}
+			
+			float3 GetRayLengthPanRadius(float2 StartUv,float AngleDeg)
+			{
 				float2 AngleStep = float2( sin(radians( AngleDeg )), cos(radians(AngleDeg) ) );
 				AngleStep = normalize( AngleStep );
 				//	step needs to be in pixels!
 				AngleStep *= _MainTex_TexelSize.x;	//	errr x or y... hmm kinda require square textures
 				
-				for ( int i=0;	i<MaxJointLength;	i++ )
-				{
-					float2 Delta = AngleStep * (float)i;
-					if ( !IsMask( StartUv + Delta ) )
-						return max( (i-1)-RayPad, 0 );
-				}
-				int i = MaxJointLength;
-				return max( (i-1)-RayPad,0);
+				int ForwardLength = GetRayLength( StartUv, AngleStep, RayPad );
+				
+				//	calc end UV to do left&right cross
+				float2 EndUv = StartUv + (AngleStep * (float)ForwardLength);
+				float2 LeftStep = float2( AngleStep.y, -AngleStep.x );
+				float2 RightStep = float2( -AngleStep.y, AngleStep.x );
+				int LeftLength = GetRayLength( EndUv, LeftStep, 0 );
+				int RightLength = GetRayLength( EndUv, RightStep, 0 );
+				
+				//	left 10
+				//	right 7
+				//	off = -1.5 = (7-10)/2
+				//float Offset = (RightLength - LeftLength) / 2.0f;
+				float Offset = (LeftLength - RightLength) / 2.0f;	//	note: we mult with left, so we want left to be positive
+				float Radius = (RightLength + LeftLength) / 2.0f;
+				
+				return float3(ForwardLength,Offset,Radius);
 			}
 		
 			float SoyLerp(float from,float to,float step)
@@ -84,10 +103,13 @@
 				
 				//	starting uv
 				float2 StartUv = float2( In.uv_MainTex.x, Heightf );
-				int RayLength = GetRayLength( StartUv, AngleDeg );
-			
-				float LengthNorm = clamp( (float)RayLength / (float)MaxJointLength, 0, 1 );
-				return float4( LengthNorm, Heightf, LengthNorm, 1.0f );
+				float3 RayLengthPanRadius = GetRayLengthPanRadius( StartUv, AngleDeg );
+				
+				float LengthNorm = clamp( RayLengthPanRadius.x / (float)MaxJointLength, 0, 1 );
+				float PanNorm = clamp( RayLengthPanRadius.y / (float)MaxJointLength, 0, 1 );
+				float RadiusNorm = clamp( RayLengthPanRadius.z / (float)MaxJointLength, 0, 1 );
+				
+				return float4( LengthNorm, PanNorm, RadiusNorm, Heightf );
 			}
 		ENDCG
 	}
