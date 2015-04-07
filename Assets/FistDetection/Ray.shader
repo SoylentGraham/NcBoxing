@@ -1,6 +1,7 @@
 ﻿Shader "Rewind/Ray" {
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
+		RayPad("RayPad", Int ) = 5
 	}
 	SubShader {
 	
@@ -23,7 +24,7 @@
 
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
-			const int RayPad = 5;
+			int RayPad;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -60,7 +61,6 @@
 			float4 frag(FragInput In) : SV_Target 
 			{
 				int Height = GetColumnHeight( In.uv_MainTex.x );
-			//	Height /= 2;
 				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
 				return float4( HeightNorm, 0, 0, 1 );
 			}

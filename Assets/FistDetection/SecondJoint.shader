@@ -5,6 +5,8 @@
 		AngleDegMin("AngleDegMin", Range(-180,180) ) = -90
 		AngleDegMax("AngleDegMax", Range(-180,180) ) = 90
 		MaxJointLength("MaxJointLength", Int ) = 40
+		RayPad("RayPad", Int ) = 20
+
 	}
 	SubShader {
 	
@@ -31,7 +33,7 @@
 			float AngleDegMin;
 			float AngleDegMax;
 			int MaxJointLength;
-			const int RayPad = 20;
+			int RayPad;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;

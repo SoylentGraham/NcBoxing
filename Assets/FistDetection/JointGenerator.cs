@@ -119,12 +119,14 @@ public class TJointCalculator
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 
-		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength);
+		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength, mSecondJointMaterial );
 	}
 	
 	
-	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength)
+	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength,Material ParamsMaterial)
 	{
+		int RayPad = ParamsMaterial.GetInt ("RayPad");
+
 		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
 		
@@ -207,7 +209,13 @@ public class TJointCalculator
 				Vector2 AngleVector = new Vector2( Mathf.Sin(AngleRad), Mathf.Cos(AngleRad) );
 				AngleVector.Normalize();
 				Vector2 LeftVector = new Vector2( AngleVector.y, -AngleVector.x ); 
-				AngleVector *= JointLength;
+
+				//	in order to center the circle, we want to move it back a bit. we know it's already <PAD> back, but we might want to go further in either direction
+				//	basically pad needs to become radius
+				//float Diff = RadiusLength - RayPad;
+				float Diff = 0;
+				AngleVector *= JointLength + Diff;
+				LeftVector *= PanLength;
 
 				
 				float2 UvScalar = new float2( 1.0f / InputTexture.width, 1.0f / InputTexture.height );
@@ -215,8 +223,8 @@ public class TJointCalculator
 				joint.mStart = new float2( x*UvScalar.x, 0 );
 				joint.mMiddle = new float2( x*UvScalar.x, Height*UvScalar.y );
 				joint.mRayEnd = new float2( joint.mMiddle.x + (AngleVector.x*UvScalar.x), joint.mMiddle.y + (AngleVector.y*UvScalar.y) );
-				joint.mEnd = new float2( joint.mRayEnd.x + (LeftVector.x * PanLength), joint.mRayEnd.y + (LeftVector.y * PanLength) );
-				joint.mEndRadius = RadiusLength;
+				joint.mEnd = new float2( joint.mRayEnd.x + (LeftVector.x*UvScalar.x), joint.mRayEnd.y + (LeftVector.y*UvScalar.y) );
+				joint.mEndRadius = Mathf.Max(1,RadiusLength);
 				Joints.Add( joint );
 				
 				if ( Joints.Count >= MaxJoints )
