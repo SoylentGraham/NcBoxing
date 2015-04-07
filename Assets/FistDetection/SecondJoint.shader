@@ -6,7 +6,7 @@
 		AngleDegMax("AngleDegMax", Range(-180,180) ) = 90
 		MaxJointLength("MaxJointLength", Int ) = 40
 		RayPad("RayPad", Int ) = 20
-
+		RadiusMin("RadiusMin", Int ) = 2
 	}
 	SubShader {
 	
@@ -34,6 +34,8 @@
 			float AngleDegMax;
 			int MaxJointLength;
 			int RayPad;
+			int RadiusMin;
+			const int MinForwardLength = 1;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -55,14 +57,18 @@
 		
 			int GetRayLength(float2 StartUv,float2 AngleStep,int Border)
 			{
-				for ( int i=0;	i<MaxJointLength;	i++ )
+				//	return 0 for immediate fail, but minimum for positive results
+				if ( !IsMask( StartUv ) )
+					return 0;
+					
+				for ( int i=1;	i<MaxJointLength;	i++ )
 				{
 					float2 Delta = AngleStep * (float)i;
 					if ( !IsMask( StartUv + Delta ) )
-						return max( (i-1)-Border, 0 );
+						return max( (i-1)-Border, MinForwardLength );
 				}
 				int i = MaxJointLength;
-				return max( (i-1)-Border,0);
+				return max( (i-1)-Border,MinForwardLength);
 			}
 			
 			float3 GetRayLengthPanRadius(float2 StartUv,float AngleDeg)
@@ -80,6 +86,10 @@
 				float2 RightStep = float2( -AngleStep.y, AngleStep.x );
 				int LeftLength = GetRayLength( EndUv, LeftStep, 0 );
 				int RightLength = GetRayLength( EndUv, RightStep, 0 );
+				
+				//	give radius a minimum
+				LeftLength = max( RadiusMin, LeftLength );
+				RightLength = max( RadiusMin, RightLength );
 				
 				//	left 10
 				//	right 7

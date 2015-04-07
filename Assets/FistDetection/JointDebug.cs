@@ -186,6 +186,11 @@ public class JointDebug : MonoBehaviour {
 		GUI.DrawTexture (rect, texture);
 	}
 	
+	static void FitToRect(ref float LengthNorm,Rect rect)
+	{
+		LengthNorm *= rect.width;
+	}
+
 	static void FitToRect(ref Vector2 PosNorm,Rect rect)
 	{
 		if (PosNorm.x < 0)
@@ -226,14 +231,22 @@ public class JointDebug : MonoBehaviour {
 		Vector2 Middle = new Vector2 (joint.mMiddle.x, joint.mMiddle.y);
 		Vector2 RayEnd = new Vector2 (joint.mRayEnd.x, joint.mRayEnd.y);
 		Vector2 End = new Vector2 (joint.mEnd.x, joint.mEnd.y);
+		Vector2 Left = End + new Vector2 (joint.mRadLeft.x, joint.mRadLeft.y);
+		Vector2 Right = End + new Vector2 (joint.mRadRight.x, joint.mRadRight.y);
+		float Radius = joint.mEndRadius;
 		FitToRect( ref Start, ScreenRect );
 		FitToRect( ref Middle, ScreenRect );
 		FitToRect( ref RayEnd, ScreenRect );
 		FitToRect( ref End, ScreenRect );
+		FitToRect( ref Left, ScreenRect );
+		FitToRect( ref Right, ScreenRect );
+		FitToRect (ref Radius, ScreenRect);
 
 		GuiHelper.DrawLine( Start, Middle, Color.red );
 		GuiHelper.DrawLine( Middle, RayEnd, Color.green );
-		GuiHelper.DrawCircle (End, joint.mEndRadius, Color.magenta);
+		GuiHelper.DrawCircle (End, Radius, Color.magenta);
+		GuiHelper.DrawLine (End, Left, Color.blue);
+		GuiHelper.DrawLine (End, Right, Color.blue);
 	}
 
 	void Update()

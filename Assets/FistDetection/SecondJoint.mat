@@ -148,7 +148,15 @@ Material:
       data:
         first:
           name: MaxJointLength
-        second: 600
+        second: 500
+      data:
+        first:
+          name: RayPad
+        second: 30
+      data:
+        first:
+          name: RadiusMin
+        second: 1
     m_Colors:
       data:
         first:
