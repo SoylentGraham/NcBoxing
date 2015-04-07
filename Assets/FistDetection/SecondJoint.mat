@@ -148,11 +148,11 @@ Material:
       data:
         first:
           name: MaxJointLength
-        second: 500
+        second: 200
       data:
         first:
           name: RayPad
-        second: 30
+        second: 20
       data:
         first:
           name: RadiusMin

@@ -71,6 +71,10 @@ public static class GuiHelper
 	public static void DrawLineStretched(Vector2 lineStart, Vector2 lineEnd, Texture2D texture, int thickness)
 	{
 		Vector2 lineVector = lineEnd - lineStart;
+		//	avoid errors with nan's
+		if (lineVector.sqrMagnitude < 0.0001f)
+			return;
+
 		float angle = Mathf.Rad2Deg * Mathf.Atan(lineVector.y / lineVector.x);
 		if (lineVector.x < 0)
 		{

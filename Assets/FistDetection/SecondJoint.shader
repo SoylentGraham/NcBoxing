@@ -47,10 +47,13 @@
 			bool IsMask(float2 st)
 			{
 				//	gr: change this to a texture border to stop
-				if ( st.x < 0.0f || st.x > 1.0f )
+				if ( st.x < 0.0f || st.x > 1.0f || st.y < 0.0f || st.y > 1.0f )
 					return false;
-				if ( st.y < 0.0f || st.y > 1.0f )
+					
+				//	debug face exclusion
+				if ( st.x > 0.4f && st.x < 0.6f )
 					return false;
+				
 				float Alpha = tex2D( _MainTex, st ).a;
 				return ( Alpha > 0.5f );
 			}

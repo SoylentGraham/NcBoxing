@@ -121,11 +121,11 @@ public class TJointCalculator
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 
-		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength, mSecondJointMaterial );
+		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaskTexture, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength, mSecondJointMaterial );
 	}
 	
 	
-	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture InputTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength,Material ParamsMaterial)
+	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture SecondJointTexture,Texture MaskTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength,Material ParamsMaterial)
 	{
 		int RayPad = ParamsMaterial.GetInt ("RayPad");
 
@@ -133,18 +133,18 @@ public class TJointCalculator
 		List<TJoint> Joints = new List<TJoint> ();
 		
 		//	gr: verify w/h agains pixels size?
-		int Width = InputTexture.width;
 		int PixelCount = SecondJointPixels.Length;
-		if (PixelCount % Width != 0)
+		if (PixelCount % SecondJointTexture.width != 0)
 			return Joints;
 		
 		//	should match mSecondJointTexture.height
-		int PixelsHeight = PixelCount / Width;
+		int PixelsWidth = SecondJointTexture.width;
+		int PixelsHeight = PixelCount / PixelsWidth;
 
-		MaxColumnTest = Mathf.Min(Width, MaxColumnTest);
+		MaxColumnTest = Mathf.Min(SecondJointTexture.width, MaxColumnTest);
 		List<int> Columns = new List<int> ();
 		for (int c=0; c<MaxColumnTest; c++) {
-			float xf = (c / (float)MaxColumnTest) * Width;
+			float xf = (c / (float)MaxColumnTest) * SecondJointTexture.width;
 			int x = Mathf.FloorToInt (xf);
 
 			//	don't add dupes
@@ -153,10 +153,10 @@ public class TJointCalculator
 				continue;
 			Columns.Add (x);
 		}
-
-		DebugOut += SecondJointPixels [0 + (0 * InputTexture.width)] + "\n";
-		DebugOut += SecondJointPixels [0 + ((InputTexture.height/2) * InputTexture.width)] + "\n";
-		DebugOut += SecondJointPixels [0 + ((InputTexture.height-1) * InputTexture.width)] + "\n";
+	
+		DebugOut += SecondJointPixels [0 + (0 * PixelsWidth)] + "\n";
+		DebugOut += SecondJointPixels [0 + ((PixelsHeight/2) * PixelsWidth)] + "\n";
+		DebugOut += SecondJointPixels [0 + ((PixelsHeight-1) * PixelsWidth)] + "\n";
 
 		//	gr: could probbaly be more cache friendly by approaching this row-by-row...
 		for (int xi=0; xi<Columns.Count; xi++) 
@@ -165,7 +165,7 @@ public class TJointCalculator
 			Color32 ColPixel = SecondJointPixels[x];
 
 			//	height is the same for each angle so we can skip that quick
-			float Height = ( ColPixel.a / 255.0f ) * InputTexture.height;
+			float Height = ( ColPixel.a / 255.0f ) * PixelsHeight;
 			if ( Height < 1 )
 				continue;
 			
@@ -175,7 +175,7 @@ public class TJointCalculator
 			
 			for ( int angstep=0;	angstep<PixelsHeight;	angstep++ )
 			{
-				int p = x + (angstep*Width);
+				int p = x + (angstep*PixelsWidth);
 				Color32 Pixel = SecondJointPixels[p];
 				int pixr = Pixel.r;
 			//	float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
@@ -195,7 +195,7 @@ public class TJointCalculator
 			
 			{
 				int angstep = BestJointAng;
-				int p = x + (angstep*Width);
+				int p = x + (angstep*PixelsWidth);
 				Color32 Pixel = SecondJointPixels[p];
 				float AngleDeg = Mathf.Lerp( AngleDegMin, AngleDegMax, (float)angstep / (float)PixelsHeight );
 
@@ -206,8 +206,10 @@ public class TJointCalculator
 
 				//	gr: something wrong in this calc? half seems to look right
 				//	texture->texture scale
-				JointLength /= 512.0f / 128.0f;
-				RadiusLength /= 512.0f / 128.0f;
+				//	gr: maybe just UVscalar is wrong?
+				JointLength /= MaskTexture.width / SecondJointTexture.width;
+				RadiusLength /= MaskTexture.width / SecondJointTexture.width;
+				PanLength /= MaskTexture.width / SecondJointTexture.width;
 				
 				float AngleRad = radians(AngleDeg);
 				Vector2 AngleVector = new Vector2( Mathf.Sin(AngleRad), Mathf.Cos(AngleRad) );
@@ -226,7 +228,7 @@ public class TJointCalculator
 				RightVector *= RadiusLength+PanLength;
 
 				
-				float2 UvScalar = new float2( 1.0f / InputTexture.width, 1.0f / InputTexture.height );
+				float2 UvScalar = new float2( 1.0f / SecondJointTexture.width, 1.0f / SecondJointTexture.height );
 				TJoint joint = new TJoint();
 				joint.mStart = new float2( x*UvScalar.x, 0 );
 				joint.mMiddle = new float2( x*UvScalar.x, Height*UvScalar.y );

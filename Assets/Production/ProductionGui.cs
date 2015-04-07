@@ -8,6 +8,7 @@ public class ProductionGui : MonoBehaviour {
 	public MaskGenerator		mMaskGenerator;
 	public BackgroundLearner	mBackgroundLearner;
 	public Texture				mCameraTexture;
+	public bool					mAutoReset = false;
 	private float				mResetCountdownInterval = 5.0f;
 	private float				mResetCountdown = 0.0f;
 	private int					mCycleJointIndex = 0;
@@ -21,10 +22,12 @@ public class ProductionGui : MonoBehaviour {
 		bool Reset = Input.GetMouseButtonDown (0);
 
 		//	every so often, reset for testing
-		mResetCountdown -= Time.deltaTime;
-		if (mResetCountdown < 0.0f) {
-			Reset = true;
-			mResetCountdown = mResetCountdownInterval;
+		if (mAutoReset) {
+			mResetCountdown -= Time.deltaTime;
+			if (mResetCountdown < 0.0f) {
+				Reset = true;
+				mResetCountdown = mResetCountdownInterval;
+			}
 		}
 
 		//	reset
