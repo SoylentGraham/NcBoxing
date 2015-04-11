@@ -13,6 +13,7 @@ public class ProductionGui : MonoBehaviour {
 	private float				mResetCountdown = 0.0f;
 	private int					mCycleJointIndex = 0;
 	public bool					mCycleJoints = false;
+	public bool					mDebugTextures = false;
 
 	[Range(0,1)]
 	public float 				mBackgroundAlpha = 0.5f;
@@ -35,6 +36,9 @@ public class ProductionGui : MonoBehaviour {
 			if (mBackgroundLearner != null)
 				mBackgroundLearner.OnDisable ();
 		}
+
+		//	fix texture leak by forcing unity to unload assets
+		Resources.UnloadUnusedAssets();
 	}
 
 	// Update is called once per frame
@@ -68,10 +72,25 @@ public class ProductionGui : MonoBehaviour {
 				if ( mCycleJointIndex == i || !mCycleJoints )
 					JointDebug.DrawJoint (mJointGenerator.mJoints [i], ScreenRect );
 			}
+
 		}
 	
 		if (mJointGenerator) {
-			GUI.Label (ScreenRect, mJointGenerator.mDebug);
+
+			string debug = "";
+			Texture2D[] AllTextures = GameObject.FindObjectsOfType<Texture2D>();
+			int Texture2DCount = AllTextures.Length;
+			debug += "Texture2D count: " +  Texture2DCount + "\n";
+
+			if ( mDebugTextures )
+			{
+				for ( int i=0;	i<Mathf.Min(30,AllTextures.Length);	i++ )
+					debug += AllTextures[i].name + " ";
+				debug += "\n";
+			}
+
+			debug += mJointGenerator.mDebug;
+			GUI.Label (ScreenRect, debug);
 		}
 	}
 }
