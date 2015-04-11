@@ -5,7 +5,7 @@ public class BackgroundLearner : MonoBehaviour {
 
 	public Texture					mInputTexture;
 	public RenderTexture			mLumTexture;
-	public Shader					mLumShader;
+	public Material					mLumMaterial;
 	public RenderTexture			mBackgroundTexture;
 	private RenderTexture			mLastBackgroundTexture;
 	public Material					mBackgroundLearnerMat;
@@ -32,10 +32,10 @@ public class BackgroundLearner : MonoBehaviour {
 			return;
 
 		//	update lum texture
-		if (mLumShader == null || mLumTexture == null)
+		if (mLumMaterial == null || mLumTexture == null)
 			return;
 		mLumTexture.DiscardContents ();
-		Graphics.Blit (mInputTexture, mLumTexture, new Material (mLumShader));
+		Graphics.Blit (mInputTexture, mLumTexture, mLumMaterial);
 
 		if (mBackgroundLearnerMat == null)
 			return;

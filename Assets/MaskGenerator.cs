@@ -45,7 +45,7 @@ public class MaskGenerator : MonoBehaviour {
 			//FillTempTexture.DiscardContents();
 			Graphics.Blit (SubtractTempTexture, mFillTempTexture, mSubtractFillMaterial);
 			//SubtractTempTexture.DiscardContents();
-			//mMaskTexture.DiscardContents();
+			mMaskTexture.DiscardContents();
 			Graphics.Blit (mFillTempTexture, mMaskTexture);
 
 		} else 

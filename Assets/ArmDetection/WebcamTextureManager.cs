@@ -6,7 +6,7 @@ public class WebcamTextureManager : MonoBehaviour {
 	private WebCamTexture	mWebcamTexture;
 	public string DeviceName = "";
 	public RenderTexture	mOutputTexture;
-	public Shader			mFlipShader;
+	public Material			mFlipMaterial;
 	public bool				mFlip = false;
 	public bool				mMirror = true;
 
@@ -57,12 +57,11 @@ public class WebcamTextureManager : MonoBehaviour {
 			mOutputTexture.DiscardContents();
 
 			//	ios camera seems to be upside down...
-			if ( mFlipShader )
+			if ( mFlipMaterial )
 			{
-				Material FlipMat = new Material( mFlipShader );
-				FlipMat.SetInt("Flip", mFlip?1:0 );
-				FlipMat.SetInt("Mirror",mMirror?1:0 );
-				Graphics.Blit (mWebcamTexture, mOutputTexture, FlipMat );
+				mFlipMaterial.SetInt("Flip", mFlip?1:0 );
+				mFlipMaterial.SetInt("Mirror",mMirror?1:0 );
+				Graphics.Blit (mWebcamTexture, mOutputTexture, mFlipMaterial );
 			}
 			else
 			{

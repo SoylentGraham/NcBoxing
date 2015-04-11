@@ -6,8 +6,8 @@ public class DebugGui : MonoBehaviour {
 	public MotionTextureGenerator mMotionTextureGenerator;
 	public WebcamTextureManager mWebcamTextureManager;
 	public BackgroundLearner	mBackgroundLearner;
-	public Shader BackgroundJustLumShader;
-	public Shader BackgroundJustScoreShader;
+	public Material BackgroundJustLumMaterial;
+	public Material BackgroundJustScoreMaterial;
 	private RenderTexture		mJustLumTexture;
 	private RenderTexture		mJustScoreTexture;
 	private RenderTexture		mSubtractTexture;
@@ -32,10 +32,10 @@ public class DebugGui : MonoBehaviour {
 	
 		//	update intermediate textures
 		if ( mBackgroundLearner != null )
-			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustLumShader, ref mJustLumTexture );
+			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustLumMaterial, ref mJustLumTexture );
 		
 		if ( mBackgroundLearner != null )
-			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustScoreShader, ref mJustScoreTexture );
+			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustScoreMaterial, ref mJustScoreTexture );
 		
 		if (mBackgroundLearner != null && mWebcamTextureManager != null) {
 			//Texture LiveTexture = mWebcamTextureManager.mTextureOutput;
@@ -71,9 +71,9 @@ public class DebugGui : MonoBehaviour {
 
 	}
 
-	void UpdateTempTexture(Texture texture,Shader shader,ref RenderTexture TempTexture)
+	void UpdateTempTexture(Texture texture,Material material,ref RenderTexture TempTexture)
 	{
-		if (shader == null)
+		if (material == null)
 			return;
 		
 		if (TempTexture == null) {
@@ -81,7 +81,7 @@ public class DebugGui : MonoBehaviour {
 			TempTexture.filterMode = mTempTextureFilterMode;
 		}
 
-		Graphics.Blit (texture, TempTexture, new Material (shader));
+		Graphics.Blit (texture, TempTexture, material);
 	}
 
 	void DrawTexture(int ScreenSectionX,int ScreenSectionY,Texture texture)
