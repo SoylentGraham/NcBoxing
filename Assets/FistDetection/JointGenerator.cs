@@ -62,7 +62,7 @@ public class TJointCalculator
 	}
 
 
-	bool GetRenderTexturePixels(ref Color32[] Colours,RenderTexture SourceTexture,TextureFormat ReadBackFormat)
+	bool GetRenderTexturePixels(ref Color32[] Colours,RenderTexture SourceTexture,TextureFormat ReadBackFormat,ref string DebugOut)
 	{
 		//	gr: currently crashing when returning out of func...
 #if UNITY_IOS && !UNITY_EDITOR && FALSE
@@ -79,14 +79,16 @@ public class TJointCalculator
 		//	calc joints frmo pixel data
 		if (mSecondJointTextureCopy == null) {
 			mSecondJointTextureCopy = new Texture2D (SourceTexture.width, SourceTexture.height, ReadBackFormat, false);
+			mSecondJointTextureCopy.name = "mSecondJointTextureCopy";
 		}
 		RenderTexture.active = SourceTexture;
 		mSecondJointTextureCopy.ReadPixels (new Rect (0, 0, SourceTexture.width, SourceTexture.height), 0, 0);
 		mSecondJointTextureCopy.Apply (true);
 		RenderTexture.active = null; 
-		//DebugOut += mSecondJointTextureCopy.GetPixel (0, 0) + "\n";
+		DebugOut += mSecondJointTextureCopy.GetPixel (0, mSecondJointTextureCopy.height-1) + "\n";
 		
 		Colours = mSecondJointTextureCopy.GetPixels32();
+		//mSecondJointTextureCopy = null;
 		return true;
 #endif
 	}
@@ -112,7 +114,7 @@ public class TJointCalculator
 
 
 		Color32[] SecondJointPixels = null;
-		if (!GetRenderTexturePixels (ref SecondJointPixels, mSecondJointTexture, ReadBackFormat)) {
+		if (!GetRenderTexturePixels (ref SecondJointPixels, mSecondJointTexture, ReadBackFormat, ref DebugOut)) {
 			DebugOut += "Failed to read render texture pixels";
 			return null;
 		}
@@ -121,7 +123,7 @@ public class TJointCalculator
 		float AngleDegMin = mSecondJointMaterial.GetFloat ("AngleDegMin");
 		float AngleDegMax = mSecondJointMaterial.GetFloat ("AngleDegMax");
 
-		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTextureCopy, MaskTexture, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength, mSecondJointMaterial );
+		return CalculateJoints (ref DebugOut, SecondJointPixels, mSecondJointTexture, MaskTexture, MaxJointLength, AngleDegMin, AngleDegMax, MaxColumnTest, MinJointLength, mSecondJointMaterial );
 	}
 	
 	
@@ -156,7 +158,7 @@ public class TJointCalculator
 	
 		DebugOut += SecondJointPixels [0 + (0 * PixelsWidth)] + "\n";
 		DebugOut += SecondJointPixels [0 + ((PixelsHeight/2) * PixelsWidth)] + "\n";
-		DebugOut += SecondJointPixels [0 + ((PixelsHeight-1) * PixelsWidth)] + "\n";
+		DebugOut += SecondJointPixels [(10) + ((PixelsHeight-1) * PixelsWidth)] + "\n";
 
 		//	gr: could probbaly be more cache friendly by approaching this row-by-row...
 		for (int xi=0; xi<Columns.Count; xi++) 

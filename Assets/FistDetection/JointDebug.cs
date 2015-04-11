@@ -51,6 +51,7 @@ public static class GuiHelper
 		{
 			_coloredLineColor = color;
 			_coloredLineTexture = new Texture2D(1, 1);
+			_coloredLineTexture.name = "_coloredLineTexture";
 			_coloredLineTexture.SetPixel(0, 0, _coloredLineColor);
 			_coloredLineTexture.wrapMode = TextureWrapMode.Repeat;
 			_coloredLineTexture.Apply();
