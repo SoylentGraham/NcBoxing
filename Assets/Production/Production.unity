@@ -236,7 +236,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mInputTexture: {fileID: 8400000, guid: ae3da96ba601c4ff68317c891dc5ba29, type: 2}
   mLumTexture: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
-  mLumShader: {fileID: 4800000, guid: 079fd334045934180b4004bf7e54655a, type: 3}
+  mLumMaterial: {fileID: 2100000, guid: 31e78e6b642144f4cbac63430ad3a48a, type: 2}
   mBackgroundTexture: {fileID: 0}
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DeviceName: 
   mOutputTexture: {fileID: 8400000, guid: ae3da96ba601c4ff68317c891dc5ba29, type: 2}
-  mFlipShader: {fileID: 4800000, guid: 5a59804679a55472da134a6a74011ca4, type: 3}
+  mFlipMaterial: {fileID: 2100000, guid: c86601507cc2a4005ac2088d67967da6, type: 2}
   mFlip: 0
   mMirror: 1
 --- !u!4 &877451876
@@ -758,7 +758,7 @@ MonoBehaviour:
   mBackgroundLearner: {fileID: 136458882}
   mCameraTexture: {fileID: 0}
   mAutoReset: 0
-  mCycleJoints: 0
+  mCycleJoints: 1
   mBackgroundAlpha: .5
 --- !u!92 &1298924858
 Behaviour:
@@ -1000,7 +1000,7 @@ MonoBehaviour:
   mBackgroundLearner: {fileID: 136458882}
   mCameraTexture: {fileID: 8400000, guid: e80fce8c28bc34a94bd9e670810f1867, type: 2}
   mAutoReset: 0
-  mCycleJoints: 0
+  mCycleJoints: 1
   mBackgroundAlpha: .5
 --- !u!1 &1894124222
 GameObject:

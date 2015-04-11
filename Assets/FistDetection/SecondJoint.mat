@@ -139,6 +139,14 @@ Material:
         second: 0
       data:
         first:
+          name: RayPad
+        second: 20
+      data:
+        first:
+          name: Debug
+        second: 0
+      data:
+        first:
           name: AngleDegMin
         second: -108
       data:
@@ -149,10 +157,6 @@ Material:
         first:
           name: MaxJointLength
         second: 200
-      data:
-        first:
-          name: RayPad
-        second: 20
       data:
         first:
           name: RadiusMin

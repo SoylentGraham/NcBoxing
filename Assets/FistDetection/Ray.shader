@@ -2,6 +2,7 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		RayPad("RayPad", Int ) = 5
+		Debug("Debug", Int ) = 1
 	}
 	SubShader {
 	
@@ -25,6 +26,7 @@
 			sampler2D _MainTex;	//	new lum
 			float4 _MainTex_TexelSize;
 			int RayPad;
+			int Debug;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -62,6 +64,8 @@
 			{
 				int Height = GetColumnHeight( In.uv_MainTex.x );
 				float HeightNorm = (float)Height / _MainTex_TexelSize.w;
+				if( Debug )
+					HeightNorm = 120.0f/255.0f;
 				return float4( HeightNorm, 0, 0, 1 );
 			}
 		ENDCG

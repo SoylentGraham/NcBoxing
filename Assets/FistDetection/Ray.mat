@@ -134,6 +134,10 @@ Material:
         first:
           name: RayPad
         second: 20
+      data:
+        first:
+          name: Debug
+        second: 1
     m_Colors:
       data:
         first:

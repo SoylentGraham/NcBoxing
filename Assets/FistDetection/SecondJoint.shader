@@ -7,6 +7,7 @@
 		MaxJointLength("MaxJointLength", Int ) = 40
 		RayPad("RayPad", Int ) = 20
 		RadiusMin("RadiusMin", Int ) = 2
+		Debug("Debug", Int) = 1
 	}
 	SubShader {
 	
@@ -36,6 +37,7 @@
 			int RayPad;
 			int RadiusMin;
 			const int MinForwardLength = 1;
+			int Debug;
 
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -124,6 +126,16 @@
 				float PanNorm = clamp( RayLengthPanRadius.y / (float)MaxJointLength, 0, 1 );
 				float RadiusNorm = clamp( RayLengthPanRadius.z / (float)MaxJointLength, 0, 1 );
 				
+				if ( Debug )
+				{
+					LengthNorm = 12.0f/255.0f;
+					PanNorm = 34.0f/255.0f;
+					RadiusNorm = 56.0f/255.0f;
+					Heightf = 78.0f/255.0f;
+					
+					LengthNorm.x = StartUv.x;
+					PanNorm = StartUv.y;
+				}
 				return float4( LengthNorm, PanNorm, RadiusNorm, Heightf );
 			}
 		ENDCG
