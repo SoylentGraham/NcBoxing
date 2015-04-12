@@ -38,7 +38,12 @@ public class ProductionGui : MonoBehaviour {
 		}
 
 		//	fix texture leak by forcing unity to unload assets
+		//	gr: killing IOS
+#if UNITY_IOS
+		//Resources.UnloadUnusedAssets();
+#else
 		Resources.UnloadUnusedAssets();
+#endif
 	}
 
 	// Update is called once per frame
