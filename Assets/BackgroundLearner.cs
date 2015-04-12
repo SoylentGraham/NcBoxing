@@ -11,18 +11,18 @@ public class BackgroundLearner : MonoBehaviour {
 	public Material					mBackgroundLearnerMat;
 	public RenderTextureFormat		mRenderTextureFormat = RenderTextureFormat.ARGBFloat;
 	public FilterMode				mRenderTextureFilterMode = FilterMode.Point;
+	private bool					mInitBackgroundTexture = true;
 
 	// Use this for initialization
 	void Start () {
-	
+		mInitBackgroundTexture = true;
+		mLastBackgroundTexture = null;
 	}
 	
 	public void OnDisable()
 	{
-		if (mBackgroundTexture != null) {
-			mBackgroundTexture.DiscardContents ();
-			mBackgroundTexture = null;
-		}
+		mInitBackgroundTexture = true;
+		mLastBackgroundTexture = null;
 	}
 	
 	// Update is called once per frame
@@ -40,14 +40,18 @@ public class BackgroundLearner : MonoBehaviour {
 		if (mBackgroundLearnerMat == null)
 			return;
 
+		if (!mBackgroundTexture)
+			return;
+
 		//	first run
-		if (mBackgroundTexture == null) {
-			mBackgroundTexture = new RenderTexture (mLumTexture.width, mLumTexture.height, 0, mRenderTextureFormat );
+		if (mInitBackgroundTexture) {
+			//mBackgroundTexture = new RenderTexture (mLumTexture.width, mLumTexture.height, 0, mRenderTextureFormat );
 			mBackgroundTexture.filterMode = mRenderTextureFilterMode;
 			mBackgroundLearnerMat.SetInt("Init",1);
 			mBackgroundTexture.DiscardContents ();
 			Graphics.Blit (mLumTexture, mBackgroundTexture, mBackgroundLearnerMat);
 			mBackgroundLearnerMat.SetInt("Init",0);
+			mInitBackgroundTexture = false;
 		}
 
 		if (mLastBackgroundTexture == null) {

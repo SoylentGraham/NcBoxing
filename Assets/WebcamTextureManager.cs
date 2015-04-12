@@ -15,7 +15,11 @@ public class WebcamTextureManager : MonoBehaviour {
 		#if UNITY_IOS && !UNITY_EDITOR
 		mFlip =  true;
 		#endif
-	
+
+		#if UNITY_ANDROID && !UNITY_EDITOR
+		mMirror = false;
+		#endif
+
 
 	}
 	

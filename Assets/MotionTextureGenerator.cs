@@ -6,16 +6,12 @@ using System.Collections.Generic;
 
 public class MotionTextureGenerator : MonoBehaviour {
 
-	public WebcamTextureManager mWebcamTextureManager;
-	public RenderTexture mLumTexture;
-	public RenderTexture mLumTextureLast;
-	public RenderTexture mMotionTexture;
-
-
-	public Shader mVideoToLumShader;
-	public Material LumToMotionMaterial;
-	public Shader mMotionInitShader;
-	public Material mMotionFillerMaterial;
+	public RenderTexture	mLumTexture;
+	private RenderTexture	mLumTextureLast;
+	public RenderTexture	mMotionTexture;
+	public Material			mMotionCalcMat;
+	public Material			mMotionInitMat;
+	public Material			mFillerMat;
 
 	// Use this for initialization
 	void Start () {
@@ -28,22 +24,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 		mLumTextureLast = null;
 	//	mMotionTexture = null;
 	}
-
-	bool ExecuteShaderVideoToLum(Texture VideoTexture)
-	{
-		if (!VideoTexture)
-			return false;
-
-		if (!mVideoToLumShader)
-			return false;
-
-		if (!mLumTexture)
-			return false;
-
-		Graphics.Blit (VideoTexture, mLumTexture, new Material (mVideoToLumShader) );
-
-		return true;
-	}
+	
 
 	bool ExecuteShaderLumToMotion(Texture LumTextureNew,Texture LumTexturePrev)
 	{
@@ -53,30 +34,29 @@ public class MotionTextureGenerator : MonoBehaviour {
 		if (!mMotionTexture)
 			return false;
 
-		if (!LumToMotionMaterial)
+		if (!mMotionInitMat || !mMotionCalcMat)
 			return false;
 
 
 		if ( LumTexturePrev == null) 
 		{
 			//	run init motion texture shader
-			Graphics.Blit (LumTextureNew, mMotionTexture, new Material(mMotionInitShader) );
+			Graphics.Blit (LumTextureNew, mMotionTexture, mMotionInitMat );
 		}
 		else{
-			LumToMotionMaterial.SetTexture("LumLastTex", LumTexturePrev );
+			mMotionCalcMat.SetTexture("LumLastTex", LumTexturePrev );
 
-			/*
 			//	run normal motion generator
-			Graphics.Blit (LumTextureNew, mMotionTexture, LumToMotionMaterial );
+			Graphics.Blit (LumTextureNew, mMotionTexture, mMotionCalcMat );
 
-			if ( mMotionFillerMaterial != null )
+			if ( mFillerMat != null )
 			{
 				var Temp = RenderTexture.GetTemporary( mMotionTexture.width, mMotionTexture.height, 0, mMotionTexture.format );
-				Graphics.Blit (mMotionTexture, Temp, mMotionFillerMaterial );
+				Graphics.Blit (mMotionTexture, Temp, mFillerMat );
 				Graphics.Blit (Temp, mMotionTexture );
 				RenderTexture.ReleaseTemporary( Temp );
 			}
-			*/
+
 		}
 
 		return true;
@@ -85,14 +65,6 @@ public class MotionTextureGenerator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (mWebcamTextureManager == null)
-			return;
-
-		Texture VideoTexture = mWebcamTextureManager.mOutputTexture;
-
-		if (!ExecuteShaderVideoToLum (VideoTexture))
-			return;
-	
 		if ( !ExecuteShaderLumToMotion( mLumTexture, mLumTextureLast ) )
 			return;
 

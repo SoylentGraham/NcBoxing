@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: MotionCalc
-  m_Shader: {fileID: 4800000, guid: 32b7d3e31a7304be2bce14881f099c9e, type: 3}
+  m_Name: MotionInit
+  m_Shader: {fileID: 4800000, guid: 5560bda7bc4d1423e8ed3b81a344fedf, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: -1
@@ -77,13 +77,6 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: LumLastTex
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -137,26 +130,6 @@ Material:
         first:
           name: _Metallic
         second: 0
-      data:
-        first:
-          name: TextureWidth
-        second: 128
-      data:
-        first:
-          name: TextureHeight
-        second: 128
-      data:
-        first:
-          name: DiffTolerance
-        second: .00999999978
-      data:
-        first:
-          name: Radius
-        second: 3
-      data:
-        first:
-          name: DiffRadius
-        second: 8
     m_Colors:
       data:
         first:

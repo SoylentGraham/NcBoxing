@@ -39,18 +39,18 @@
 				return Out;
 			}
 			
-			float3 GetDeltaDiff(float BaseLum,int2 SampleOffsetPixels,FragInput In)
+			float4 GetDeltaDiff(float BaseLum,int2 SampleOffsetPixels,FragInput In,int Radius)
 			{
 				float2 PixelsToUv = float2( 1.0/(float)TextureWidth, 1.0/(float)TextureHeight );
 				float2 SampleOffsetUv = SampleOffsetPixels * PixelsToUv;
-				float PrevLum = tex2D( LumLastTex, In.uv_MainTex + SampleOffsetUv ).r;
+				float PrevLum = tex2D( LumLastTex, In.uv_MainTex + SampleOffsetUv ).g;
 				float Diff = BaseLum - PrevLum;
 				if ( abs(Diff) > DiffTolerance )
 					Diff = 10000.0f;
-				return float3( SampleOffsetPixels.x, SampleOffsetPixels.y, Diff );
+				return float4( SampleOffsetPixels.x, SampleOffsetPixels.y, Diff, Radius );
 			}
 			
-			float3 GetBestDeltaDiff(float3 a,float3 b)
+			float4 GetBestDeltaDiff(float4 a,float4 b)
 			{
 				if ( abs(a.z) <= abs(b.z) )
 					return a;
@@ -58,14 +58,14 @@
 					return b;
 			}
 			
-			float3 GetRadiusBestDeltaDiff(float BaseLum,int Radius,FragInput In,float3 BestDeltaDiff)
+			float4 GetRadiusBestDeltaDiff(float BaseLum,int Radius,FragInput In,float4 BestDeltaDiff)
 			{
 			
 				//	top row
 				for ( int x=-Radius;	x<=Radius;	x++ )
 				{
 					int y = -Radius;
-					float3 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In );
+					float4 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In, Radius );
 					BestDeltaDiff = GetBestDeltaDiff( BestDeltaDiff, RadDiff );
 				}
 				
@@ -73,7 +73,7 @@
 				for ( int x=-Radius;	x<=Radius;	x++ )
 				{
 					int y = Radius;
-					float3 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In );
+					float4 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In, Radius );
 					BestDeltaDiff = GetBestDeltaDiff( BestDeltaDiff, RadDiff );
 				}
 				
@@ -81,7 +81,7 @@
 				for ( int y=-Radius+1;	y<=Radius-1;	y++ )
 				{
 					int x = -Radius;
-					float3 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In );
+					float4 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In, Radius );
 					BestDeltaDiff = GetBestDeltaDiff( BestDeltaDiff, RadDiff );
 				}
 				
@@ -89,7 +89,7 @@
 				for ( int y=-Radius+1;	y<=Radius-1;	y++ )
 				{
 					int x = Radius;
-					float3 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In );
+					float4 RadDiff = GetDeltaDiff( BaseLum, int2( x,y ), In, Radius );
 					BestDeltaDiff = GetBestDeltaDiff( BestDeltaDiff, RadDiff );
 				}
 				
@@ -101,8 +101,8 @@
 				float LumNew = tex2D( _MainTex, In.uv_MainTex ).r;
 				float BaseLum = LumNew;
 
-				//	initial value 
-				float3 DeltaDiff = GetDeltaDiff( BaseLum, int2(0,0), In );
+				//	initial value
+				float4 DeltaDiff = GetDeltaDiff( BaseLum, int2(0,0), In, 0 );
 			
 				//	search radius for best result
 				for ( int r=1;	r<=DiffRadius;	r++ )
@@ -124,8 +124,9 @@
 					
 				float Diff = abs(DeltaDiff.z);
 				//float Diff = 0;
+				bool IsInitial = (DeltaDiff.w==0);
 					
-				return float4( Delta.x, Delta.y, Diff, 1.0 );
+				return float4( Delta.x, Delta.y, Diff, IsInitial?0:1 );
 				
 				/*			
 				float LumLast = tex2D( LumLastTex, In.uv_MainTex ).r;

@@ -237,7 +237,7 @@ MonoBehaviour:
   mInputTexture: {fileID: 8400000, guid: ae3da96ba601c4ff68317c891dc5ba29, type: 2}
   mLumTexture: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
   mLumMaterial: {fileID: 2100000, guid: 31e78e6b642144f4cbac63430ad3a48a, type: 2}
-  mBackgroundTexture: {fileID: 0}
+  mBackgroundTexture: {fileID: 8400000, guid: 4ebd4caa05d3b4a07ae4bee569b6ee64, type: 2}
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
   mRenderTextureFormat: 0
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   mBackgroundLearner: {fileID: 136458882}
   mCameraTexture: {fileID: 8400000, guid: e80fce8c28bc34a94bd9e670810f1867, type: 2}
   mAutoReset: 0
-  mCycleJoints: 1
+  mCycleJoints: 0
   mDebugTextures: 0
   mBackgroundAlpha: .5
 --- !u!1 &1894124222
