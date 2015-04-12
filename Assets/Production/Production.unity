@@ -759,6 +759,7 @@ MonoBehaviour:
   mCameraTexture: {fileID: 0}
   mAutoReset: 0
   mCycleJoints: 1
+  mDebugTextures: 0
   mBackgroundAlpha: .5
 --- !u!92 &1298924858
 Behaviour:
@@ -1001,6 +1002,7 @@ MonoBehaviour:
   mCameraTexture: {fileID: 8400000, guid: e80fce8c28bc34a94bd9e670810f1867, type: 2}
   mAutoReset: 0
   mCycleJoints: 1
+  mDebugTextures: 0
   mBackgroundAlpha: .5
 --- !u!1 &1894124222
 GameObject:

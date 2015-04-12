@@ -7,7 +7,6 @@
 		MaxJointLength("MaxJointLength", Int ) = 40
 		RayPad("RayPad", Int ) = 20
 		RadiusMin("RadiusMin", Int ) = 2
-		Debug("Debug", Int) = 1
 	}
 	SubShader {
 	
@@ -15,6 +14,7 @@
 	{
 		CGPROGRAM
 
+#define DEBUG	0
 			#pragma vertex vert
 			#pragma fragment frag
 	
@@ -37,8 +37,7 @@
 			int RayPad;
 			int RadiusMin;
 			const int MinForwardLength = 1;
-			int Debug;
-
+			
 			FragInput vert(VertexInput In) {
 				FragInput Out;
 				Out.Position = mul (UNITY_MATRIX_MVP, In.Position );
@@ -62,6 +61,9 @@
 		
 			int GetRayLength(float2 StartUv,float2 AngleStep,int Border)
 			{
+				if( DEBUG)
+					return 20;
+		
 				//	return 0 for immediate fail, but minimum for positive results
 				if ( !IsMask( StartUv ) )
 					return 0;
@@ -113,28 +115,34 @@
 					
 			float4 frag(FragInput In) : SV_Target 
 			{
+				
 				float AngleDeg = SoyLerp( AngleDegMin, AngleDegMax, In.uv_MainTex.y );
 				int HeightMax = _MainTex_TexelSize.w;	//	original texture height used to normalise height
 				float Heightf = tex2D( _RayTex, float2(In.uv_MainTex.x,0) ).r;
 				int Height = Heightf * (float)HeightMax;
+
+				if ( DEBUG )
+					return float4(Heightf,Heightf,Heightf,Heightf);
 				
 				//	starting uv
 				float2 StartUv = float2( In.uv_MainTex.x, Heightf );
 				float3 RayLengthPanRadius = GetRayLengthPanRadius( StartUv, AngleDeg );
+
+				float MaxJointLengthf = (float)MaxJointLength;				
 				
-				float LengthNorm = clamp( RayLengthPanRadius.x / (float)MaxJointLength, 0, 1 );
-				float PanNorm = clamp( RayLengthPanRadius.y / (float)MaxJointLength, 0, 1 );
-				float RadiusNorm = clamp( RayLengthPanRadius.z / (float)MaxJointLength, 0, 1 );
+				float LengthNorm = clamp( RayLengthPanRadius.x / MaxJointLengthf, 0, 1 );
+				float PanNorm = clamp( RayLengthPanRadius.y / MaxJointLengthf, 0, 1 );
+				float RadiusNorm = clamp( RayLengthPanRadius.z / MaxJointLengthf, 0, 1 );
 				
-				if ( Debug )
+				if ( DEBUG )
 				{
 					LengthNorm = 12.0f/255.0f;
 					PanNorm = 34.0f/255.0f;
 					RadiusNorm = 56.0f/255.0f;
-					Heightf = 78.0f/255.0f;
+					//Heightf = 78.0f/255.0f;
 					
-					LengthNorm.x = StartUv.x;
-					PanNorm = StartUv.y;
+					//LengthNorm.x = StartUv.x;
+					//PanNorm = StartUv.y;
 				}
 				return float4( LengthNorm, PanNorm, RadiusNorm, Heightf );
 			}
