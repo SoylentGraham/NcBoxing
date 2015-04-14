@@ -140,11 +140,27 @@ Material:
       data:
         first:
           name: DiffTolerance
-        second: .140000001
+        second: .393999994
       data:
         first:
           name: DiffRadius
         second: 6
+      data:
+        first:
+          name: RadStep
+        second: 1
+      data:
+        first:
+          name: MinDeltaLength
+        second: 1
+      data:
+        first:
+          name: Debug_AmplifyDelta
+        second: 0
+      data:
+        first:
+          name: FavourSmallerRadDiff
+        second: .0879999995
       data:
         first:
           name: TextureWidth
@@ -157,22 +173,6 @@ Material:
         first:
           name: Radius
         second: 3
-      data:
-        first:
-          name: RadStep
-        second: 1
-      data:
-        first:
-          name: MinDeltaLength
-        second: 1
-      data:
-        first:
-          name: Debug_AmplifyDelta
-        second: 1
-      data:
-        first:
-          name: FavourSmallerRadDiff
-        second: .0879999995
     m_Colors:
       data:
         first:

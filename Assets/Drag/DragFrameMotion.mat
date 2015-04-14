@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: FrameMotion
+  m_Name: DragFrameMotion
   m_Shader: {fileID: 4800000, guid: 2b2be71097164417eab055263ccd9590, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
@@ -77,6 +77,20 @@ Material:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: LumLastTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: Prev_MainTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
     m_Floats:
       data:
         first:
@@ -130,6 +144,30 @@ Material:
         first:
           name: _Metallic
         second: 0
+      data:
+        first:
+          name: DiffTolerance
+        second: .188999996
+      data:
+        first:
+          name: DiffRadius
+        second: 7
+      data:
+        first:
+          name: RadStep
+        second: 2
+      data:
+        first:
+          name: MinDeltaLength
+        second: 0
+      data:
+        first:
+          name: Debug_AmplifyDelta
+        second: 0
+      data:
+        first:
+          name: FavourSmallerRadDiff
+        second: .0970000029
     m_Colors:
       data:
         first:

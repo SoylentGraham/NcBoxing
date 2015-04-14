@@ -31,9 +31,9 @@
 			float4 frag(FragInput In) : SV_Target 
 			{
 				float2 OriginalUv = In.uv_MainTex;
-				float z = 0;
 				float w = 1;
-				return float4( OriginalUv.x,OriginalUv.y,z,w);
+				float Valid = 1;
+				return float4( OriginalUv.x,OriginalUv.y,Valid,w);
 			}
 		ENDCG
 	}

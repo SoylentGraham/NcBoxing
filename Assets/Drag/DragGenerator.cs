@@ -13,7 +13,7 @@ public class DragGenerator : MonoBehaviour {
 	public RenderTexture	mUvMap;
 
 	public Material			mUndragShader;
-	public Texture			mUndragSource;
+	public RenderTexture	mUndragSource;
 	public RenderTexture	mUndragTarget;
 
 	private bool			mInitialised = false;
@@ -22,6 +22,7 @@ public class DragGenerator : MonoBehaviour {
 	public void Start () {
 		mInitialised = false;
 		mFrameLumPrev = null;
+		mUndragSource = null;
 		Resources.UnloadUnusedAssets ();
 	}
 
@@ -54,6 +55,12 @@ public class DragGenerator : MonoBehaviour {
 		}
 
 		if (mFrameLum) {
+			if (!mUndragSource )
+			{
+				mUndragSource = new RenderTexture (mFrameLum.width, mFrameLum.height, mFrameLum.depth, mFrameLum.format);
+				Graphics.Blit (mFrameLum, mUndragSource);
+			}
+
 			if (!mFrameLumPrev)
 				mFrameLumPrev = new RenderTexture (mFrameLum.width, mFrameLum.height, mFrameLum.depth, mFrameLum.format);
 			Graphics.Blit (mFrameLum, mFrameLumPrev);
@@ -63,6 +70,7 @@ public class DragGenerator : MonoBehaviour {
 		if (mUndragSource && mUndragTarget && mUvMap) {
 			mUndragShader.SetTexture("UvMapTexture", mUvMap );
 			Graphics.Blit (mUndragSource, mUndragTarget, mUndragShader);
+			//Graphics.Blit (mUndragSource, mUndragTarget);
 		}
 	}
 }

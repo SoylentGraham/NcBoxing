@@ -4,6 +4,7 @@ using System.Collections;
 
 public class ProductionGui : MonoBehaviour {
 
+	public DragGenerator		mDragGenerator;
 	public BackgroundLearner	mBackgroundLearner;
 	public MotionTextureGenerator	mMotionTextureGenerator;
 	public JointGenerator		mJointGenerator;
@@ -50,6 +51,8 @@ public class ProductionGui : MonoBehaviour {
 				mBackgroundLearner.OnDisable ();
 			if ( mMotionTextureGenerator != null )
 				mMotionTextureGenerator.OnDisable();
+			if( mDragGenerator != null )
+				mDragGenerator.OnDisable();
 		}
 
 		if (mShowBackgroundLum && mBackgroundLumShader != null && mBackgroundTexture != null) {

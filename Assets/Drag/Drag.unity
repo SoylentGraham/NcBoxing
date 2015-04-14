@@ -297,6 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec8e71fd3c4646079788adbb840a9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mDragGenerator: {fileID: 1712138178}
   mBackgroundLearner: {fileID: 136458882}
   mMotionTextureGenerator: {fileID: 0}
   mJointGenerator: {fileID: 0}
@@ -535,6 +536,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec8e71fd3c4646079788adbb840a9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mDragGenerator: {fileID: 1712138178}
   mBackgroundLearner: {fileID: 136458882}
   mMotionTextureGenerator: {fileID: 0}
   mJointGenerator: {fileID: 0}
