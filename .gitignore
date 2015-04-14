@@ -2,6 +2,8 @@
 *.app
 *.zip
 Build/
+*.apk
+
 
 # =============== #
 # Audio resources #

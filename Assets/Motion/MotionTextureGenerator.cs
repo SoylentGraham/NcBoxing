@@ -18,7 +18,7 @@ public class MotionTextureGenerator : MonoBehaviour {
 	
 	}
 
-	void OnDisable()
+	public void OnDisable()
 	{
 	//	mLumTexture = null;
 		mLumTextureLast = null;
@@ -70,10 +70,11 @@ public class MotionTextureGenerator : MonoBehaviour {
 
 		if (!mLumTextureLast) {
 			mLumTextureLast = new RenderTexture (mLumTexture.width, mLumTexture.height, mLumTexture.depth, mLumTexture.format, RenderTextureReadWrite.Default);
+			Graphics.Blit (mLumTexture, mLumTextureLast);
 		}
 
 		//	copy for next run
-		Graphics.Blit (mLumTexture, mLumTextureLast);
+		//Graphics.Blit (mLumTexture, mLumTextureLast);
 
 	}
 }

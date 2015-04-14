@@ -5,8 +5,9 @@ using System.Collections;
 [ExecuteInEditMode]
 public class MaskGenerator : MonoBehaviour {
 
-	public Texture			mInputTexture;
-	public RenderTexture	mMaskTexture;
+	//public RenderTexture		mMotionTexture;
+	public Texture				mInputTexture;
+	public RenderTexture		mMaskTexture;
 	public BackgroundLearner	mBackgroundLearner;
 	public Material				mSubtractMaterial;
 	private RenderTextureFormat	mTempTextureFormat = RenderTextureFormat.ARGB32;
