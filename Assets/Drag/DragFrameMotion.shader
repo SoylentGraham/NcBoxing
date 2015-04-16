@@ -58,9 +58,14 @@
 			{
 				float LumDiffDiff = abs(a.z) - abs(b.z);
 
-				//	on ultra minor differences, favour smaller radius				
-				if ( abs(LumDiffDiff) < FavourSmallerRadDiff )
-					return ( length(a.xy) < length(b.xy) ) ? a : b;
+				//	on ultra minor differences, favour smaller movement				
+//				if ( abs(LumDiffDiff) < FavourSmallerRadDiff )
+//					return ( length(a.xy) < length(b.xy) ) ? a : b;
+				if ( LumDiffDiff == 0 )
+				{
+					if ( length(a.xy) <= length(b.xy) ) return a;
+					return b;
+				}				
 				
 				if ( LumDiffDiff < 0 )
 					return a;
@@ -70,8 +75,6 @@
 			
 			float4 GetRadiusBestDeltaDiff(float BaseLum,int Radius,FragInput In,float4 BestDeltaDiff)
 			{
-				int HitCount = 0;
-			
 				//	top & bottom row
 				for ( int x=-Radius;	x<=Radius;	x++ )
 				{

@@ -22,7 +22,6 @@ public class DragGenerator : MonoBehaviour {
 	public void Start () {
 		mInitialised = false;
 		mFrameLumPrev = null;
-		mUndragSource = null;
 		Resources.UnloadUnusedAssets ();
 	}
 

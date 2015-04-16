@@ -147,7 +147,7 @@ Material:
       data:
         first:
           name: DiffTolerance
-        second: .188999996
+        second: .193000004
       data:
         first:
           name: DiffRadius
@@ -155,7 +155,7 @@ Material:
       data:
         first:
           name: RadStep
-        second: 2
+        second: 1
       data:
         first:
           name: MinDeltaLength
@@ -167,7 +167,7 @@ Material:
       data:
         first:
           name: FavourSmallerRadDiff
-        second: .0970000029
+        second: .0610000007
     m_Colors:
       data:
         first:
