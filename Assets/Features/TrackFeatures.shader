@@ -90,8 +90,8 @@
 			
 			int2 GetNewFeature(float2 Uv,int2 Offset)
 			{
-				Uv += Offset * FeaturesPrev_TexelSize.xy;
-				float4 Feature4 = tex2D( FeaturesPrev, Uv );
+				Uv += Offset * _MainTex_TexelSize.xy;
+				float4 Feature4 = tex2D( _MainTex, Uv );
 				return GetFeature2( Feature4 );
 			}
 			
@@ -126,9 +126,11 @@
 				
 				if ( HitCount == 0 )
 					return Result_NoHits;
+					
+				//	gr: write UV so we don't need to normalise & unnormalise the values (to cope with negatives)
 				float2 MatchUvDelta = BestIndex*_MainTex_TexelSize.xy;
-				float2 MatchUv = SampleOrigin + MatchUvDelta;
-				return float4( MatchUvDelta.x, MatchUvDelta.y, BestScore, 1 );
+				float2 MatchUv = clamp( SampleOrigin + MatchUvDelta, 0, 1 );
+				return float4( MatchUv.x, MatchUv.y, BestScore, 1 );
 			}
 
 		ENDCG
