@@ -253,7 +253,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1049977718
 Transform:
   m_ObjectHideFlags: 0
@@ -297,13 +297,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec8e71fd3c4646079788adbb840a9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mDragGenerator: {fileID: 1712138178}
+  mDragGenerator: {fileID: 0}
   mBackgroundLearner: {fileID: 136458882}
   mMotionTextureGenerator: {fileID: 0}
   mJointGenerator: {fileID: 0}
   mMaskGenerator: {fileID: 1547451388}
   mBackgroundTexture: {fileID: 8400000, guid: 4ebd4caa05d3b4a07ae4bee569b6ee64, type: 2}
-  mCameraTexture: {fileID: 8400000, guid: c26c9821d223440bc85ea89818680e8d, type: 2}
+  mCameraTexture: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
   mAutoReset: 0
   mCycleJoints: 1
   mDebugTextures: 0
@@ -432,18 +432,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1712138177}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1450737b435de4f62905b830acef4a95, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b8253e2eac9b498b9836be16ca549ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mFrameLum: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
-  mFrameMotionShader: {fileID: 2100000, guid: bf6548cf0370c4249be18ddbba30861a, type: 2}
-  mFrameMotion: {fileID: 8400000, guid: c26c9821d223440bc85ea89818680e8d, type: 2}
-  mUvMapInitShader: {fileID: 2100000, guid: 78a156a451acd4103b68ea8c5f3c5c32, type: 2}
-  mUvMapUpdateShader: {fileID: 2100000, guid: 4585e77746ade42ba857da1cb95dc0b0, type: 2}
-  mUvMap: {fileID: 8400000, guid: 4c7ac701884574ebdbd5d3b7a94c09ba, type: 2}
-  mUndragShader: {fileID: 2100000, guid: 01f2880fb541a499ebbc46fcfb581bb3, type: 2}
-  mUndragSource: {fileID: 8400000, guid: ae3da96ba601c4ff68317c891dc5ba29, type: 2}
-  mUndragTarget: {fileID: 8400000, guid: 59911b0ec66d4407680e7f55d37a7214, type: 2}
+  mMakeFeaturesShader: {fileID: 2100000, guid: c39d37706d75944c8809f9e43d0c39d3, type: 2}
+  mFeatures: {fileID: 8400000, guid: 62764401d69c646debd41c6c9bf2a0d2, type: 2}
+  mTrackFeaturesShader: {fileID: 2100000, guid: 9ad12b326aea146b4b9d442c4e54974d,
+    type: 2}
+  mTrackedFeatures: {fileID: 8400000, guid: 7f76e79c27ef34ff7985fc3f8441ec0f, type: 2}
+  mInput: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
 --- !u!4 &1712138179
 Transform:
   m_ObjectHideFlags: 0
@@ -473,7 +470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!92 &1860560171
 Behaviour:
   m_ObjectHideFlags: 0
@@ -536,7 +533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ec8e71fd3c4646079788adbb840a9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mDragGenerator: {fileID: 1712138178}
+  mDragGenerator: {fileID: 0}
   mBackgroundLearner: {fileID: 136458882}
   mMotionTextureGenerator: {fileID: 0}
   mJointGenerator: {fileID: 0}

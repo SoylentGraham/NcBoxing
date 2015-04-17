@@ -1,41 +1,129 @@
-﻿Shader "Custom/MakeFeatures" {
+﻿Shader "Rewind/MakeFeatures" {
 	Properties {
-		_Color ("Color", Color) = (1,1,1,1)
-		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+		_MainTex ("_MainTex", 2D) = "white" {}
+		InnerRadius("InnerRadius",Range(1,20)) = 2
+		OuterRadius("OuterRadius",Range(1,20)) = 4
+		BrighterTolerance("BrighterTolerance",Range(0,1)) = 0.10
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
-		LOD 200
-		
+	 Pass {
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
 
-		// Use shader model 3.0 target, to get nicer looking lighting
-		#pragma target 3.0
+			#include "PopCommon.cginc"
 
-		sampler2D _MainTex;
+			#pragma vertex vert
+			#pragma fragment frag
+	
+			struct VertexInput {
+				float4 Position : POSITION;
+				float2 uv_MainTex : TEXCOORD0;
+			};
+			
+			struct FragInput {
+				float4 Position : SV_POSITION;
+				float2	uv_MainTex : TEXCOORD0;
+			};
 
-		struct Input {
-			float2 uv_MainTex;
-		};
 
-		half _Glossiness;
-		half _Metallic;
-		fixed4 _Color;
+			sampler2D _MainTex;
+			float4 _MainTex_TexelSize;
+			float InnerRadius;
+			float OuterRadius;
+			float BrighterTolerance;
+		
+			FragInput vert(VertexInput In) {
+				FragInput Out;
+				Out.Position = mul (UNITY_MATRIX_MVP, In.Position );
+				Out.uv_MainTex = In.uv_MainTex;
+				return Out;
+			}
+			
+		
+			float2 GetRingSampleOffsetPx(int Index,int Max,float Radius)
+			{
+				float t = Index / (float)Max;
+				float rad = radians( 360.f * t );
+				float x = cos( rad ) * Radius;
+				float y = sin( rad ) * Radius;
+				return float2(x,y);
+			}
+			
+				
+			float3 GetSampleOffsetPx(int Index)
+			{
+				/*
+				//	gr: make 2 rings, inner and outer
+				int InnerSamples = (mSampleCount / 3) * 1;
+				float InnerRadius = mRadius / 2.f;
+				CalculateOffsets( mSampleOffsets, InnerSamples, InnerRadius );
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
-			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = c.rgb;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;
-			o.Alpha = c.a;
-		}
+				int OuterSamples = (mSampleCount / 3) * 2;
+				float OuterRadius = mRadius / 1.f;
+				CalculateOffsets( mSampleOffsets, OuterSamples, OuterRadius );
+				*/
+				if ( Index < InnerSampleCount )
+				{
+					float2 Offset = GetRingSampleOffsetPx( Index, InnerSampleCount, InnerRadius );
+					return float3( Offset.x, Offset.y, 1 );
+				}
+				else if ( Index < InnerSampleCount+OuterSampleCount )
+				{
+					float2 Offset = GetRingSampleOffsetPx( Index-InnerSampleCount, OuterSampleCount, OuterRadius );
+					return float3( Offset.x, Offset.y, 1 );
+				}
+				else
+				{
+					//	index out of range
+					return float3( 0, 0, 1 );
+				}
+			}
+			
+			float GetLumAtOffset(float2 UvOrigin,float2 UvOffset)
+			{
+				return tex2D( _MainTex, UvOrigin + UvOffset.xy ).r;
+			}
+
+			float GetLum(int Index,float2 UvOrigin)
+			{
+				float3 UvOffset = GetSampleOffsetPx( Index );
+				if ( UvOffset.z < 1 )
+					return 0;
+				return GetLumAtOffset( UvOrigin, UvOffset.xy * _MainTex_TexelSize.xy );
+			}
+			
+			float4 frag(FragInput In) : SV_Target 
+			{
+				//	get intensity of root pixel with a tolerance so anything a little darker counts as brighter
+				float BaseIntensity = GetLumAtOffset(In.uv_MainTex,float2(0,0)) - BrighterTolerance;
+	
+				int Bits07 = 0;
+				int Bits815 = 0;
+				int Bits1623 = 0;
+				int Bits2431 = 0;
+				
+				for ( int i=0;	i<32;	i++ )
+				{
+					float Intensity = GetLum( i, In.uv_MainTex );
+					
+					//	set bit
+					int Bit = ( Intensity >= BaseIntensity ) ? BIT(i) : 0;
+
+					//	or with accumulating bit mask					
+					if ( i < 8 )
+						Bits07 = OR( Bits07, Bit );
+					else if ( i < 16 )
+						Bits815 = OR( Bits815, Bit );
+					else if ( i < 24 )
+						Bits1623 = OR( Bits1623, Bit );
+					else //if ( i < 16 )
+						Bits2431 = OR( Bits2431, Bit );
+				}
+				
+				//	write bit mask to colour
+				return float4( Bits07 / 255.0f, Bits815 / 255.0f, Bits1623 / 255.0f, Bits2431 / 255.0f );
+			}
+
 		ENDCG
+		}
 	} 
-	FallBack "Diffuse"
 }
