@@ -2,6 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+public class FeatureResults
+{
+	public int				mTotalResults = 0;
+	public List<Vector4>	mMatches = new List<Vector4>();
+
+};
+
 public class FeatureTracker : MonoBehaviour {
 
 	public Material			mMakeFeaturesShader;
@@ -15,6 +23,9 @@ public class FeatureTracker : MonoBehaviour {
 	private Texture2D		mTrackedFeaturesDataTexture;
 	private TextureFormat	mTrackedFeaturesDataTextureFormat = TextureFormat.ARGB32;
 	private Color32[]		mTrackedFeaturesData;
+	public FeatureResults	mFeatureResults;
+	public int 				mRansacSamples = 10;
+	public bool 			mLockPrevFeatures = false;
 
 	// Use this for initialization
 	void Start () {
@@ -44,10 +55,14 @@ public class FeatureTracker : MonoBehaviour {
 		}
 
 		//	pop oldest prev features
+		//	gr: may need to hold onto it until we've moved significantly, 
+		//		if we don't use an old frame, maybe don't want any others and make the latest (significant change) the next to pop
 		RenderTexture FeaturesPrev = null;
 		if (mFeaturesPrev.Count >= mTrackFrameLag) {
 			FeaturesPrev = mFeaturesPrev [0];
-			mFeaturesPrev.RemoveAt (0);
+
+			if ( !mLockPrevFeatures )
+				mFeaturesPrev.RemoveAt (0);
 		}
 
 			//	find the feature's best match
@@ -74,23 +89,91 @@ public class FeatureTracker : MonoBehaviour {
 			Graphics.Blit (mFeatures, FeaturesPrev);
 			mFeaturesPrev.Add (FeaturesPrev);
 		}
+
+
+		//	calc feature pairs
+		if ( mTrackedFeaturesData != null && mTrackedFeaturesDataTexture != null )
+			mFeatureResults = CalcFeaturePairs (mTrackedFeaturesData,mTrackedFeaturesDataTexture.width, mTrackedFeaturesDataTexture.height, mRansacSamples);
 	}
 
+	FeatureResults CalcFeaturePairs(Color32[] TrackedFeaturesData,int ImageWidth,int ImageHeight,int RansacSamples)
+	{
+		FeatureResults Results = new FeatureResults ();
+
+		//	count matches
+		for (int i=0; i<mTrackedFeaturesData.Length; i++)
+		{
+			if ( mTrackedFeaturesData [i].a < 1 )
+				continue;
+			Results.mTotalResults ++;
+
+			if ( Results.mMatches.Count >= RansacSamples )
+				continue;
+
+			int y = i / ImageWidth;
+			int x = i % ImageWidth;
+			float Startu = x /(float)ImageWidth;
+			float Startv = y /(float)ImageHeight;
+			float Endu = (mTrackedFeaturesData [i].r / 255.0f);
+			float Endv = (mTrackedFeaturesData [i].g / 255.0f);
+			Vector4 Match = new Vector4( Startu, Startv, Endu, Endv );
+			Results.mMatches.Add( Match );
+		}
+
+		return Results;
+	}
+	static void FitToRect(ref float LengthNorm,Rect rect)
+	{
+		LengthNorm *= rect.width;
+	}
+	
+	static void FitToRect(ref Vector2 PosNorm,Rect rect)
+	{
+		if (PosNorm.x < 0)
+			PosNorm.x = 0;
+		if (PosNorm.y < 0)
+			PosNorm.y = 0;
+		if (PosNorm.x > 1)
+			PosNorm.x = 1;
+		if (PosNorm.y > 1)
+			PosNorm.y = 1;
+		
+		//	y is inverted... at source? not the line drawing code?
+		PosNorm.y = 1.0f - PosNorm.y;
+		
+		PosNorm.x *= rect.width;
+		PosNorm.y *= rect.height;
+		PosNorm.x += rect.xMin;
+		PosNorm.y += rect.yMin;
+	}
+	public static void DrawMatch(Vector4 joint,Rect ScreenRect)
+	{
+		Vector2 Start = new Vector2 (joint.x, joint.y);
+		Vector2 Middle = new Vector2 (joint.z, joint.w);
+		FitToRect( ref Start, ScreenRect );
+		FitToRect( ref Middle, ScreenRect );
+
+		GuiHelper.DrawLine( Start, Middle, Color.red );
+	}
 	void OnGUI()
 	{
 		Rect a = new Rect(0,0,Screen.width/2,Screen.height);
 		GUI.DrawTexture (a, mFeatures);
 	
 		Rect b = new Rect(Screen.width/2,0,Screen.width/2,Screen.height);
-		GUI.DrawTexture (b, mInputBlurred? mInputBlurred : mInput);
-		GUI.DrawTexture (b, mTrackedFeatures);
+	//	GUI.DrawTexture (b, mInputBlurred? mInputBlurred : mInput);
+	//	GUI.DrawTexture (b, mTrackedFeatures);
 
-		//	count matches
-		int MatchedFeatures = 0;
-		if (mTrackedFeaturesData!=null) {
-			for (int i=0; i<mTrackedFeaturesData.Length; i++)
-				MatchedFeatures += (mTrackedFeaturesData [i].a > 0) ? 1 : 0;
+		if ( mFeatureResults != null )
+			GUI.Label( a, "matched features: " + mFeatureResults.mTotalResults );
+
+		//	render matches
+		if ( mFeatureResults != null )
+		{
+			for ( int i=0;	i<mFeatureResults.mMatches.Count;	i++ )
+			{
+				DrawMatch( mFeatureResults.mMatches[i], b );
+			}
 		}
-		GUI.Label( a, "matched features: " + MatchedFeatures );
 	}
 }
