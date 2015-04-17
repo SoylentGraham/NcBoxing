@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class FeatureTracker : MonoBehaviour {
 
 	public Material			mMakeFeaturesShader;
-	private RenderTexture	mFeaturesPrev;			//	feature per pixel
+	public int				mTrackFrameLag = 5;			//	may need this? but to test algo we need the tracking over X frames to get significant movement
+	private List<RenderTexture>	mFeaturesPrev;			//	feature per pixel
 	public RenderTexture	mFeatures;
 	public Material			mTrackFeaturesShader;
 	public RenderTexture	mTrackedFeatures;	//	per pixel feature's best match (offset)
@@ -16,9 +18,10 @@ public class FeatureTracker : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		mFeaturesPrev = null;
+		mFeaturesPrev = new List<RenderTexture> ();
 		mTrackedFeaturesDataTexture = null;
 		mTrackedFeaturesData = null;
+		Resources.UnloadUnusedAssets ();
 	}
 
 	public void OnDisable()
@@ -40,12 +43,19 @@ public class FeatureTracker : MonoBehaviour {
 			Graphics.Blit (mInput, mFeatures, mMakeFeaturesShader);
 		}
 
-		//	find the feature's best match
-		if (mFeaturesPrev && mTrackFeaturesShader && mTrackedFeatures ) 
+		//	pop oldest prev features
+		RenderTexture FeaturesPrev = null;
+		if (mFeaturesPrev.Count >= mTrackFrameLag) {
+			FeaturesPrev = mFeaturesPrev [0];
+			mFeaturesPrev.RemoveAt (0);
+		}
+
+			//	find the feature's best match
+		if (FeaturesPrev && mTrackFeaturesShader && mTrackedFeatures ) 
 		{
 			if (! mTrackedFeaturesDataTexture )
 				mTrackedFeaturesDataTexture = new Texture2D( mTrackedFeatures.width, mTrackedFeatures.height, mTrackedFeaturesDataTextureFormat, false );
-			mTrackFeaturesShader.SetTexture("FeaturesPrev", mFeaturesPrev );
+			mTrackFeaturesShader.SetTexture("FeaturesPrev", FeaturesPrev );
 			Graphics.Blit( mFeatures, mTrackedFeatures, mTrackFeaturesShader );
 
 			//	extract data for debug rendering
@@ -56,10 +66,14 @@ public class FeatureTracker : MonoBehaviour {
 			RenderTexture.active = null;
 		}
 
-		//	copy current features to last features
-		if ( !mFeaturesPrev )
-			mFeaturesPrev = new RenderTexture( mFeatures.width, mFeatures.height, mFeatures.depth, mFeatures.format );
-		Graphics.Blit (mFeatures, mFeaturesPrev);
+		//	push features onto prev list
+		if (mFeaturesPrev.Count < mTrackFrameLag) {
+			//	re-use texture
+			if (!FeaturesPrev)
+				FeaturesPrev = new RenderTexture (mFeatures.width, mFeatures.height, mFeatures.depth, mFeatures.format);
+			Graphics.Blit (mFeatures, FeaturesPrev);
+			mFeaturesPrev.Add (FeaturesPrev);
+		}
 	}
 
 	void OnGUI()
@@ -73,8 +87,10 @@ public class FeatureTracker : MonoBehaviour {
 
 		//	count matches
 		int MatchedFeatures = 0;
-		for (int i=0; i<mTrackedFeaturesData.Length; i++)
-			MatchedFeatures += (mTrackedFeaturesData [i].a > 0) ? 1 : 0;
+		if (mTrackedFeaturesData!=null) {
+			for (int i=0; i<mTrackedFeaturesData.Length; i++)
+				MatchedFeatures += (mTrackedFeaturesData [i].a > 0) ? 1 : 0;
+		}
 		GUI.Label( a, "matched features: " + MatchedFeatures );
 	}
 }

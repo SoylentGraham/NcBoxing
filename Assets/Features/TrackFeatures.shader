@@ -126,9 +126,9 @@
 				
 				if ( HitCount == 0 )
 					return Result_NoHits;
-				float2 MatchUv = SampleOrigin + BestIndex*_MainTex_TexelSize.xy;
-			//	return float4( MatchUv.x, MatchUv.y, BestScore, 1 );
-				return float4( BestScore>0.8f?1:0, 0, 1, 1 );
+				float2 MatchUvDelta = BestIndex*_MainTex_TexelSize.xy;
+				float2 MatchUv = SampleOrigin + MatchUvDelta;
+				return float4( MatchUvDelta.x, MatchUvDelta.y, BestScore, 1 );
 			}
 
 		ENDCG
