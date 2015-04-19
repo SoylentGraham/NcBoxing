@@ -39,10 +39,13 @@
 				float sinSpeedScale = 1.0f/16.0f;
 				float cosSpeedScale = 1.0f/10.0f;
 				float2 offset = float2(cos(Time*cosSpeedScale),sin(Time*sinSpeedScale));
-				int x = (In.uv_MainTex.x+offset.x) * _MainTex_TexelSize.z;
-				int y = (In.uv_MainTex.y+offset.y) * _MainTex_TexelSize.w;
-				
-				if ( (x % 20) == 0 && (y%20)==0 )
+				int x = abs(In.uv_MainTex.x+offset.x) * _MainTex_TexelSize.z;
+				int y = abs(In.uv_MainTex.y+offset.y) * _MainTex_TexelSize.w;
+				int xspace = 60;
+				int yspace = 60;
+				int Width = 20;
+				int Height = 20;
+				if ( (x % xspace) < Width && (y%yspace)<Height )
 					return float4( 1,1,1,1 );
 				else
 					return float4( 0,0,0,1 );
