@@ -1,0 +1,54 @@
+﻿Shader "Rewind/BlurInput" {
+	Properties {
+		_MainTex ("_MainTex", 2D) = "white" {}
+	}
+	SubShader {
+	 Pass {
+		CGPROGRAM
+
+			#include "PopCommon.cginc"
+  
+			#pragma vertex vert
+			#pragma fragment frag
+	
+			struct VertexInput {
+				float4 Position : POSITION;
+				float2 uv_MainTex : TEXCOORD0;
+			};
+			
+			struct FragInput {
+				float4 Position : SV_POSITION;
+				float2	uv_MainTex : TEXCOORD0;
+			};
+
+
+			sampler2D _MainTex;
+			float4 _MainTex_TexelSize;
+			float Time;
+			
+			FragInput vert(VertexInput In) {
+				FragInput Out;
+				Out.Position = mul (UNITY_MATRIX_MVP, In.Position );
+				Out.uv_MainTex = In.uv_MainTex;
+				return Out;
+			}
+			
+			
+			float4 frag(FragInput In) : SV_Target 
+			{
+				float sinSpeedScale = 1.0f/16.0f;
+				float cosSpeedScale = 1.0f/10.0f;
+				float2 offset = float2(cos(Time*cosSpeedScale),sin(Time*sinSpeedScale));
+				int x = (In.uv_MainTex.x+offset.x) * _MainTex_TexelSize.z;
+				int y = (In.uv_MainTex.y+offset.y) * _MainTex_TexelSize.w;
+				
+				if ( (x % 20) == 0 && (y%20)==0 )
+					return float4( 1,1,1,1 );
+				else
+					return float4( 0,0,0,1 );
+			}
+
+		ENDCG
+		}
+	} 
+}

@@ -140,7 +140,7 @@ Material:
       data:
         first:
           name: SampleRadius
-        second: 4
+        second: 6
       data:
         first:
           name: MaxHitCount
@@ -148,7 +148,19 @@ Material:
       data:
         first:
           name: MinScore
-        second: .796999991
+        second: .930000007
+      data:
+        first:
+          name: SampleRadiusStep
+        second: 1
+      data:
+        first:
+          name: UseDebugResults
+        second: 0
+      data:
+        first:
+          name: gUseDebugResults
+        second: 1
     m_Colors:
       data:
         first:

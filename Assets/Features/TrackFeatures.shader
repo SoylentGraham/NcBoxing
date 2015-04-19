@@ -3,8 +3,10 @@
 		_MainTex ("_MainTex", 2D) = "white" {}
 		FeaturesPrev ("FeaturesPrev", 2D) = "white" {}
 		SampleRadius("SampleRadius",Int) = 4
+		SampleRadiusStep("SampleRadiusStep",Range(1,10) ) = 1
 		MaxHitCount("MaxHitCount",Range(1,40)) = 3	//	over this and we disregard this feature as non-unique
 		MinScore("MinScore", Range(0,1)) = 0.7
+		gUseDebugResults("UseDebugResults", Int ) = 0
 	}
 	SubShader {
 	 Pass {
@@ -34,6 +36,8 @@
 			int SampleRadius;
 			int MaxHitCount;
 			float MinScore;
+			int SampleRadiusStep;
+			int gUseDebugResults;
 			
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -97,8 +101,10 @@
 			
 			float4 frag(FragInput In) : SV_Target 
 			{
-				float4 Result_TooManyHits = float4( 0,1,0,0 );
-				float4 Result_NoHits = float4( 1,0,0,0 );
+				bool UseDebugResults = (gUseDebugResults!=0);
+				float4 Result_TooManyHits = float4( 0,0,1,UseDebugResults?1:0 );
+				float4 Result_NoHits = float4( 1,0,0,UseDebugResults?1:0 );
+				float4 Result_Valid = float4( 0,1,0,1 );
 				
 				int2 Feature = GetPrevFeature( In.uv_MainTex, int2(0,0) );
 				//	todo: offset this with prediction from kalman or accellerometer or gyro
@@ -108,21 +114,24 @@
 				float BestScore = -1;
 				int HitCount = 0;
 				
-				for ( int y=-SampleRadius;	y<=SampleRadius;	y++ )
-				for ( int x=-SampleRadius;	x<=SampleRadius;	x++ )
+				for ( int y=-SampleRadius;	y<=SampleRadius;	y+=max(1,SampleRadiusStep) )
+				for ( int x=-SampleRadius;	x<=SampleRadius;	x+=max(1,SampleRadiusStep) )
 				{
 					int2 MatchFeature = GetNewFeature( SampleOrigin, int2(x,y) );
 					float Score = GetFeatureScore( Feature, MatchFeature );
 					if ( Score < MinScore )
 						continue;
-					if ( Score <= BestScore )
+					if ( Score < BestScore )
 						continue;
 					BestScore = Score;
 					BestIndex = int2(x,y);
 					HitCount++;
+
+					//	gr: only want to discount many very-high rate matches?
 					if ( HitCount > MaxHitCount )
 						return Result_TooManyHits;
 				}
+
 				
 				if ( HitCount == 0 )
 					return Result_NoHits;
@@ -130,7 +139,8 @@
 				//	gr: write UV so we don't need to normalise & unnormalise the values (to cope with negatives)
 				float2 MatchUvDelta = BestIndex*_MainTex_TexelSize.xy;
 				float2 MatchUv = clamp( SampleOrigin + MatchUvDelta, 0, 1 );
-				return float4( MatchUv.x, MatchUv.y, BestScore, 1 );
+				return UseDebugResults ? Result_Valid : float4( MatchUv.x, MatchUv.y, BestScore, 1 );
+				//return float4( MatchUv.x, MatchUv.y, BestScore, 1 );
 			}
 
 		ENDCG

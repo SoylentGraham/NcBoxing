@@ -4,6 +4,7 @@
 		InnerRadius("InnerRadius",Range(1,20)) = 2
 		OuterRadius("OuterRadius",Range(1,20)) = 4
 		BrighterTolerance("BrighterTolerance",Range(0,1)) = 0.10
+		InvertLum("InvertLum", Int ) = 0
 	}
 	SubShader {
 	 Pass {
@@ -30,7 +31,9 @@
 			float InnerRadius;
 			float OuterRadius;
 			float BrighterTolerance;
-		
+			bool InvertLum;
+			
+			
 			FragInput vert(VertexInput In) {
 				FragInput Out;
 				Out.Position = mul (UNITY_MATRIX_MVP, In.Position );
@@ -80,7 +83,8 @@
 			
 			float GetLumAtOffset(float2 UvOrigin,float2 UvOffset)
 			{
-				return tex2D( _MainTex, UvOrigin + UvOffset.xy ).r;
+				float lum = tex2D( _MainTex, UvOrigin + UvOffset.xy ).r;
+				return InvertLum ? 1-lum : lum;
 			}
 
 			float GetLum(int Index,float2 UvOrigin)

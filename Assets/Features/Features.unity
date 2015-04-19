@@ -436,11 +436,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mMakeFeaturesShader: {fileID: 2100000, guid: c39d37706d75944c8809f9e43d0c39d3, type: 2}
+  mTrackFrameLag: 1
   mFeatures: {fileID: 8400000, guid: 62764401d69c646debd41c6c9bf2a0d2, type: 2}
   mTrackFeaturesShader: {fileID: 2100000, guid: 9ad12b326aea146b4b9d442c4e54974d,
     type: 2}
   mTrackedFeatures: {fileID: 8400000, guid: 7f76e79c27ef34ff7985fc3f8441ec0f, type: 2}
   mInput: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
+  mInputBlurred: {fileID: 8400000, guid: d2d41ff020fb441db98d86573b5c29dd, type: 2}
+  mRansacSamples: 150
+  mLockPrevFeatures: 0
+  mShowInput: 1
 --- !u!4 &1712138179
 Transform:
   m_ObjectHideFlags: 0

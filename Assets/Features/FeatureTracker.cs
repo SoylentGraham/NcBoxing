@@ -20,12 +20,14 @@ public class FeatureTracker : MonoBehaviour {
 	public RenderTexture	mTrackedFeatures;	//	per pixel feature's best match (offset)
 	public RenderTexture	mInput;
 	public RenderTexture	mInputBlurred;
+	public Material			mInputBlurShader;
 	private Texture2D		mTrackedFeaturesDataTexture;
 	private TextureFormat	mTrackedFeaturesDataTextureFormat = TextureFormat.ARGB32;
 	private Color32[]		mTrackedFeaturesData;
 	public FeatureResults	mFeatureResults;
 	public int 				mRansacSamples = 10;
 	public bool 			mLockPrevFeatures = false;
+	public bool				mShowInput = true;
 
 	// Use this for initialization
 	void Start () {
@@ -48,7 +50,13 @@ public class FeatureTracker : MonoBehaviour {
 			return;
 
 		if (mInputBlurred) {
-			Graphics.Blit (mInput, mInputBlurred);
+			if ( mInputBlurShader )
+			{
+				mInputBlurShader.SetFloat("Time", Time.timeSinceLevelLoad );
+				Graphics.Blit (mInput, mInputBlurred, mInputBlurShader);
+			}
+			else
+				Graphics.Blit (mInput, mInputBlurred);
 			Graphics.Blit (mInputBlurred, mFeatures, mMakeFeaturesShader);
 		} else {
 			Graphics.Blit (mInput, mFeatures, mMakeFeaturesShader);
@@ -161,8 +169,11 @@ public class FeatureTracker : MonoBehaviour {
 		GUI.DrawTexture (a, mFeatures);
 	
 		Rect b = new Rect(Screen.width/2,0,Screen.width/2,Screen.height);
-	//	GUI.DrawTexture (b, mInputBlurred? mInputBlurred : mInput);
-	//	GUI.DrawTexture (b, mTrackedFeatures);
+		if (mShowInput) {
+			GUI.DrawTexture (b, mInputBlurred ? mInputBlurred : mInput);
+		} else {
+			GUI.DrawTexture (b, mTrackedFeatures);
+		}
 
 		if ( mFeatureResults != null )
 			GUI.Label( a, "matched features: " + mFeatureResults.mTotalResults );
