@@ -8,6 +8,11 @@ public class FeatureResults
 	public int				mTotalResults = 0;
 	public List<Vector4>	mMatches = new List<Vector4>();
 
+	public float			GetMatchLength(int Index)
+	{
+		Vector2 Delta = new Vector2 (mMatches [Index].x - mMatches [Index].z, mMatches [Index].y - mMatches [Index].w);
+		return Delta.magnitude;
+	}
 };
 
 public class FeatureTracker : MonoBehaviour {
@@ -28,6 +33,8 @@ public class FeatureTracker : MonoBehaviour {
 	public int 				mRansacSamples = 10;
 	public bool 			mLockPrevFeatures = false;
 	public bool				mShowInput = true;
+	[Range(0,10)]
+	public float			mRenderMinDelta = 0.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -154,14 +161,14 @@ public class FeatureTracker : MonoBehaviour {
 		PosNorm.x += rect.xMin;
 		PosNorm.y += rect.yMin;
 	}
-	public static void DrawMatch(Vector4 joint,Rect ScreenRect)
+	public static void DrawMatch(Vector4 joint,Rect ScreenRect,Color Colour)
 	{
 		Vector2 Start = new Vector2 (joint.x, joint.y);
 		Vector2 Middle = new Vector2 (joint.z, joint.w);
 		FitToRect( ref Start, ScreenRect );
 		FitToRect( ref Middle, ScreenRect );
 
-		GuiHelper.DrawLine( Start, Middle, Color.red );
+		GuiHelper.DrawLine( Start, Middle, Colour );
 	}
 	void OnGUI()
 	{
@@ -175,16 +182,21 @@ public class FeatureTracker : MonoBehaviour {
 			GUI.DrawTexture (b, mTrackedFeatures);
 		}
 
-		if ( mFeatureResults != null )
-			GUI.Label( a, "matched features: " + mFeatureResults.mTotalResults );
+		int FilteredResults = 0;
 
 		//	render matches
 		if ( mFeatureResults != null )
 		{
 			for ( int i=0;	i<mFeatureResults.mMatches.Count;	i++ )
 			{
-				DrawMatch( mFeatureResults.mMatches[i], b );
+				bool Fast = ( mFeatureResults.GetMatchLength(i) * 128.0f >= mRenderMinDelta );
+				DrawMatch( mFeatureResults.mMatches[i], b, Fast ? Color.green : Color.red );
+				FilteredResults++;
 			}
 		}
+
+		if ( mFeatureResults != null )
+			GUI.Label( a, "matched features: " + FilteredResults + "/" + mFeatureResults.mTotalResults );
+
 	}
 }
