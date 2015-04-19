@@ -21,7 +21,7 @@ int RIGHTSHIFT(int Mask,int Iterations=1)
 
 int BIT(int BitIndex)
 {
-	return (BitIndex==0) ? 1 : BitIndex * 2;
+	return (BitIndex==0) ? 1 : pow(2,BitIndex);
 }
 
 int OR(int a,int b)
