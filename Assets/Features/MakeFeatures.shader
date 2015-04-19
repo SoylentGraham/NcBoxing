@@ -77,7 +77,7 @@
 				else
 				{
 					//	index out of range
-					return float3( 0, 0, 1 );
+					return float3( 0, 0, 0 );
 				}
 			}
 			
@@ -108,22 +108,27 @@
 				for ( int i=0;	i<32;	i++ )
 				{
 					float Intensity = GetLum( i, In.uv_MainTex );
-					
+	
 					//	set bit
-					int Bit = ( Intensity >= BaseIntensity ) ? BIT(i) : 0;
-
+					bool SetBit = ( Intensity >= BaseIntensity );
+					//if ( i>23)
+					//	SetBit = true;
+					if ( !SetBit )
+						continue;
+				
 					//	or with accumulating bit mask					
 					if ( i < 8 )
-						Bits07 = OR( Bits07, Bit );
+						Bits07 = OR( Bits07, BIT(i-0) );
 					else if ( i < 16 )
-						Bits815 = OR( Bits815, Bit );
+						Bits815 = OR( Bits815, BIT(i-8) );
 					else if ( i < 24 )
-						Bits1623 = OR( Bits1623, Bit );
-					else //if ( i < 16 )
-						Bits2431 = OR( Bits2431, Bit );
+						Bits1623 = OR( Bits1623, BIT(i-16) );
+					else //if ( i < 32 )
+						Bits2431 = OR( Bits2431, BIT(i-24) );
 				}
 				
 				//	write bit mask to colour
+			//	return float4(1,1,1,1);
 				return float4( Bits07 / 255.0f, Bits815 / 255.0f, Bits1623 / 255.0f, Bits2431 / 255.0f );
 			}
 
