@@ -140,7 +140,7 @@ Material:
       data:
         first:
           name: SampleRadius
-        second: 6
+        second: 4
       data:
         first:
           name: MaxHitCount
@@ -148,7 +148,7 @@ Material:
       data:
         first:
           name: MinScore
-        second: .930000007
+        second: .797999978
       data:
         first:
           name: SampleRadiusStep

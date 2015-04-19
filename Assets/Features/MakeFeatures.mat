@@ -145,7 +145,7 @@ Material:
       data:
         first:
           name: OuterRadius
-        second: 15
+        second: 5.80000019
       data:
         first:
           name: BrighterTolerance

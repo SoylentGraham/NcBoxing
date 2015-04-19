@@ -111,8 +111,6 @@
 	
 					//	set bit
 					bool SetBit = ( Intensity >= BaseIntensity );
-					//if ( i>23)
-					//	SetBit = true;
 					if ( !SetBit )
 						continue;
 				
