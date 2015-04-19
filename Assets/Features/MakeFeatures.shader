@@ -91,7 +91,7 @@
 			{
 				float3 UvOffset = GetSampleOffsetPx( Index );
 				if ( UvOffset.z < 1 )
-					return 0;
+					return 2;
 				return GetLumAtOffset( UvOrigin, UvOffset.xy * _MainTex_TexelSize.xy );
 			}
 			

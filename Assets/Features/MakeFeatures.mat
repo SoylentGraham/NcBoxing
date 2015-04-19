@@ -141,11 +141,11 @@ Material:
       data:
         first:
           name: InnerRadius
-        second: 2
+        second: 3
       data:
         first:
           name: OuterRadius
-        second: 5.80000019
+        second: 5
       data:
         first:
           name: BrighterTolerance
@@ -153,7 +153,7 @@ Material:
       data:
         first:
           name: InvertLum
-        second: 0
+        second: 1
     m_Colors:
       data:
         first:

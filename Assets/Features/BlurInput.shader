@@ -1,6 +1,7 @@
 ﻿Shader "Rewind/BlurInput" {
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
+		AnimateSpeed("AnimateSpeed", Range(0,1) ) = 1
 	}
 	SubShader {
 	 Pass {
@@ -25,6 +26,7 @@
 			sampler2D _MainTex;
 			float4 _MainTex_TexelSize;
 			float Time;
+			float AnimateSpeed;
 			
 			FragInput vert(VertexInput In) {
 				FragInput Out;
@@ -36,8 +38,8 @@
 			
 			float4 frag(FragInput In) : SV_Target 
 			{
-				float sinSpeedScale = 1.0f/16.0f;
-				float cosSpeedScale = 1.0f/10.0f;
+				float sinSpeedScale = AnimateSpeed/16.0f;
+				float cosSpeedScale = AnimateSpeed/10.0f;
 				float2 offset = float2(cos(Time*cosSpeedScale),sin(Time*sinSpeedScale));
 				int x = abs(In.uv_MainTex.x+offset.x) * _MainTex_TexelSize.z;
 				int y = abs(In.uv_MainTex.y+offset.y) * _MainTex_TexelSize.w;

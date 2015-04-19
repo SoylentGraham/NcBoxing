@@ -92,6 +92,10 @@ Material:
         second: 0
       data:
         first:
+          name: SampleRadius
+        second: 3
+      data:
+        first:
           name: _Parallax
         second: .0199999996
       data:
@@ -130,10 +134,6 @@ Material:
         first:
           name: _Metallic
         second: 0
-      data:
-        first:
-          name: SampleRadius
-        second: 3
       data:
         first:
           name: HitCountMin

@@ -130,6 +130,10 @@ Material:
         first:
           name: _Metallic
         second: 0
+      data:
+        first:
+          name: AnimateSpeed
+        second: 1
     m_Colors:
       data:
         first:

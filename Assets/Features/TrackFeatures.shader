@@ -4,8 +4,9 @@
 		FeaturesPrev ("FeaturesPrev", 2D) = "white" {}
 		SampleRadius("SampleRadius",Int) = 4
 		SampleRadiusStep("SampleRadiusStep",Range(1,10) ) = 1
-		MaxHitCount("MaxHitCount",Range(1,40)) = 3	//	over this and we disregard this feature as non-unique
-		MinScore("MinScore", Range(0,1)) = 0.7
+		MaxCommonHitCount("MaxCommonHitCount",Range(1,40)) = 3	//	over this and we disregard this feature as non-unique
+		MinScore("MinScore", Range(0,1)) = 0.70
+		CommonMinScore("CommonMinScore", Range(0,1)) = 0.90
 		gUseDebugResults("UseDebugResults", Int ) = 0
 	}
 	SubShader {
@@ -34,8 +35,9 @@
 			sampler2D FeaturesPrev;
 			float4 FeaturesPrev_TexelSize;
 			int SampleRadius;
-			int MaxHitCount;
+			int MaxCommonHitCount;
 			float MinScore;
+			float CommonMinScore;
 			int SampleRadiusStep;
 			int gUseDebugResults;
 			
@@ -66,8 +68,8 @@
 				//	todo: rotate ring by shifting/rolling
 				int MatchInner = GetMatchingBitCount( FeatureA.x, FeatureB.x, InnerSampleCount );
 				int MatchOuter = GetMatchingBitCount( FeatureA.y, FeatureB.y, OuterSampleCount );
-				float ScoreWeightInner = 0.5f;
-				float ScoreWeightOuter = 0.5f;
+				float ScoreWeightInner = InnerSampleWeight;
+				float ScoreWeightOuter = OuterSampleWeight;
 				float Score = 0.0f;
 				Score += (MatchInner/(float)InnerSampleCount) * ScoreWeightInner;
 				Score += (MatchOuter/(float)OuterSampleCount) * ScoreWeightOuter;
@@ -110,9 +112,10 @@
 				//	todo: offset this with prediction from kalman or accellerometer or gyro
 				float2 SampleOrigin = In.uv_MainTex;
 				
-				int2 BestIndex = int2(0,0);
+				float2 BestIndex = int2(0,0);
 				float BestScore = -1;
-				int HitCount = 0;
+				float BestDist = 1000.0f;
+				int CommonHitCount = 0;
 				
 				for ( int y=-SampleRadius;	y<=SampleRadius;	y+=max(1,SampleRadiusStep) )
 				for ( int x=-SampleRadius;	x<=SampleRadius;	x+=max(1,SampleRadiusStep) )
@@ -121,24 +124,36 @@
 					float Score = GetFeatureScore( Feature, MatchFeature );
 					if ( Score < MinScore )
 						continue;
-					if ( Score < BestScore )
-						continue;
-					BestScore = Score;
-					BestIndex = int2(x,y);
-					HitCount++;
+						
+					//	disregard if we have loads above a common score (eg, loads over 95%, the feature must be common)
+					if ( Score >= CommonMinScore )
+					{
+						CommonHitCount++;
+						if ( CommonHitCount >= MaxCommonHitCount )
+							return Result_TooManyHits;
+					}
 
-					//	gr: only want to discount many very-high rate matches?
-					if ( HitCount > MaxHitCount )
-						return Result_TooManyHits;
+					//if ( Score < BestScore )
+					//	continue;
+						
+					float Dist = length(float2(x,y));
+					
+					if ( Dist < BestDist )
+					{					
+						BestDist = Dist;					
+						BestScore = Score;
+						BestIndex = float2(x,y);
+					}
 				}
 
 				
-				if ( HitCount == 0 )
+				if ( BestScore < 0 )
 					return Result_NoHits;
 					
 				//	gr: write UV so we don't need to normalise & unnormalise the values (to cope with negatives)
 				float2 MatchUvDelta = BestIndex*_MainTex_TexelSize.xy;
-				float2 MatchUv = clamp( SampleOrigin + MatchUvDelta, 0, 1 );
+				//float2 MatchUv = clamp( SampleOrigin + MatchUvDelta, 0, 1 );
+				float2 MatchUv = SampleOrigin + MatchUvDelta;
 				return UseDebugResults ? Result_Valid : float4( MatchUv.x, MatchUv.y, BestScore, 1 );
 				//return float4( MatchUv.x, MatchUv.y, BestScore, 1 );
 			}
