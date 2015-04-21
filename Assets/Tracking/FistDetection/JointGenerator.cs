@@ -129,7 +129,7 @@ public class TJointCalculator
 	
 	List<TJoint> CalculateJoints(ref string DebugOut,Color32[] SecondJointPixels,Texture SecondJointTexture,Texture MaskTexture,int MaxJointLength,float AngleDegMin,float AngleDegMax,int MaxColumnTest,int MinJointLength,Material ParamsMaterial)
 	{
-		int RayPad = ParamsMaterial.GetInt ("RayPad");
+		//int RayPad = ParamsMaterial.GetInt ("RayPad");
 
 		int MaxJoints = 400;
 		List<TJoint> Joints = new List<TJoint> ();
