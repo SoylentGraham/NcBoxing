@@ -141,11 +141,11 @@ Material:
       data:
         first:
           name: InnerRadius
-        second: 3
+        second: 2
       data:
         first:
           name: OuterRadius
-        second: 5
+        second: 8
       data:
         first:
           name: BrighterTolerance

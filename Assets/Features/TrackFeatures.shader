@@ -2,7 +2,7 @@
 	Properties {
 		_MainTex ("_MainTex", 2D) = "white" {}
 		FeaturesPrev ("FeaturesPrev", 2D) = "white" {}
-		SampleRadius("SampleRadius",Int) = 4
+		_SampleRadius("SampleRadius",Int) = 4
 		SampleRadiusStep("SampleRadiusStep",Range(1,10) ) = 1
 		MaxCommonHitCount("MaxCommonHitCount",Range(1,40)) = 3	//	over this and we disregard this feature as non-unique
 		MinScore("MinScore", Range(0,1)) = 0.70
@@ -34,7 +34,8 @@
 			float4 _MainTex_TexelSize;
 			sampler2D FeaturesPrev;
 			float4 FeaturesPrev_TexelSize;
-			int SampleRadius;
+			int _SampleRadius;
+			const int SampleRadius = max( 0, min( 10, _SampleRadius ) );
 			int MaxCommonHitCount;
 			float MinScore;
 			float CommonMinScore;

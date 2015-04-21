@@ -239,6 +239,45 @@ Transform:
   - {fileID: 29111318}
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!1 &928468061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 928468063}
+  - 114: {fileID: 928468062}
+  m_Layer: 0
+  m_Name: App
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &928468062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 928468061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90f2740d2bc36498fa24300b81fa0580, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &928468063
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 928468061}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
 --- !u!1 &1049977717
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,11 +481,12 @@ MonoBehaviour:
     type: 2}
   mTrackedFeatures: {fileID: 8400000, guid: 7f76e79c27ef34ff7985fc3f8441ec0f, type: 2}
   mInput: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
-  mInputBlurred: {fileID: 8400000, guid: d2d41ff020fb441db98d86573b5c29dd, type: 2}
-  mInputBlurShader: {fileID: 2100000, guid: 5bcb970490d7e4177859066f05676fb9, type: 2}
-  mRansacSamples: 300
+  mInputBlurred: {fileID: 0}
+  mInputBlurShader: {fileID: 0}
+  mRansacSamples: 200
   mLockPrevFeatures: 0
   mShowInput: 1
+  mRenderMinDelta: 1
 --- !u!4 &1712138179
 Transform:
   m_ObjectHideFlags: 0
