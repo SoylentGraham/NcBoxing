@@ -39,9 +39,11 @@ public class StairDismount : MonoBehaviour {
 			RaycastHit hit; //a local variable that will receive the hit info from the Raycast call below
 			if (Physics.Raycast(ray,out hit))
 			{
+				Debug.Log ("Raycast hit something");
 				//check if the raycast target has a rigid body (belongs to the ragdoll)
 				if (hit.rigidbody!=null)
 				{
+					Debug.Log ("Raycast hit rigidbody");
 					//find the RagdollHelper component and activate ragdolling
 					RagdollHelper helper=GetComponent<RagdollHelper>();
 					helper.ragdolled=true;
