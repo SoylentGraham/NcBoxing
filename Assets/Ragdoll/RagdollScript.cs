@@ -7,6 +7,8 @@ using System.Collections;
 
 
 public class RagdollScript : MonoBehaviour {
+
+	/*
 	//Helper to set the isKinematc property of all RigidBodies in the children of the 
 	//game object that this script is attached to
 	void SetKinematic(bool newValue)
@@ -17,9 +19,16 @@ public class RagdollScript : MonoBehaviour {
 		//For each of the components in the array, treat the component as a Rigidbody and set its isKinematic property
 		foreach (Rigidbody rb in bodies)
 		{
+			var rdPart = rb.gameObject.GetComponent<RagdollPartScript>();
+			if( rdPart&& !rdPart.IsUpperBody() )
+			{
+				Debug.Log( rb.gameObject.name + " is lower");
+				continue;
+			}
 			rb.isKinematic=newValue;
 		}
 	}
+
 	// Use this for initialization
 	void Start () {
 		//Set all RigidBodies to kinematic so that they can be controlled with Mecanim
@@ -35,4 +44,5 @@ public class RagdollScript : MonoBehaviour {
 			GetComponent<Animator>().enabled=false;
 		}
 	}
+	*/
 }

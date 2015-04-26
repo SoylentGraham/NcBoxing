@@ -22,6 +22,114 @@ Perhaps there could be an editor script that precomputes the needed information.
 */
 
 public class RagdollHelper : MonoBehaviour {
+
+	//Declare a member variables for distributing the impacts over several frames
+	float impactEndTime=0;
+	Rigidbody impactTarget=null;
+	Vector3 impact;
+	[Range(0,3)]
+	public float RagdollPartTime = 1.0f;
+
+
+	public LayerMask mBoxingMask;
+
+
+	public bool HasAnyRagdollParts()
+	{
+		bool AnyRagdolls = false;
+		RagdollPartScript[] Parts = this.GetComponentsInChildren<RagdollPartScript> ();
+		foreach (var Part in Parts) {
+			if (Part.IsRagdoll ())
+				AnyRagdolls = true;
+		}
+		return AnyRagdolls;
+	}
+
+	public void OnRagdollChange(RagdollPartScript RagdollPart)
+	{
+		bool AnyRagdolls = HasAnyRagdollParts();
+		var animator = this.GetComponent<Animator> ();
+		bool EnableAnimator = !AnyRagdolls;
+		if (EnableAnimator != animator.enabled) {
+			Debug.Log ("Animator enabled now: " + EnableAnimator);
+			animator.enabled = EnableAnimator;
+		}
+	}
+
+	void Start () {
+		
+		//Get all the rigid bodies that belong to the ragdoll
+		Rigidbody[] rigidBodies=GetComponentsInChildren<Rigidbody>();
+		
+		//Add the RagdollPartScript to all the gameobjects that also have the a rigid body
+		foreach (Rigidbody body in rigidBodies)
+		{
+			RagdollPartScript rps=body.gameObject.AddComponent<RagdollPartScript>();
+			rps.mainScript=this;
+		}
+	}
+	
+	public void DoHit(RagdollPartScript Part,Vector3 Direction)
+	{
+		/*
+		//Debug.Log ("DoHit()");
+		//find the RagdollHelper component and activate ragdolling
+		RagdollHelper helper=GetComponent<RagdollHelper>();
+		helper.ragdolled=true;
+		
+		//set the impact target to whatever the ray hit
+		impactTarget = Body;
+		
+		//impact direction also according to the ray
+		impact = Direction * 2.0f;
+		
+		//the impact will be reapplied for the next 250ms
+		//to make the connected objects follow even though the simulated body joints
+		//might stretch
+		impactEndTime=Time.time+0.25f;
+		*/
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		/*
+		//if left mouse button clicked
+		if (Input.GetMouseButtonDown(0))
+		{
+			//Get a ray going from the camera through the mouse cursor
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			
+			//check if the ray hits a physic collider
+			RaycastHit hit; //a local variable that will receive the hit info from the Raycast call below
+			if (Physics.Raycast(ray,out hit))
+			{
+				Debug.Log ("Raycast hit " + hit.transform.gameObject.name );
+				//check if the raycast target has a rigid body (belongs to the ragdoll)
+				if (hit.rigidbody!=null)
+				{
+					DoHit(hit.rigidbody,ray.direction);
+				}
+			}
+		}
+
+		
+		//Pressing space makes the character get up, assuming that the character root has
+		//a RagdollHelper script
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			RagdollHelper helper=GetComponent<RagdollHelper>();
+			helper.ragdolled=false;
+		}	
+		
+		//Check if we need to apply an impact
+		if (Time.time<impactEndTime)
+		{
+			if ( impactTarget != null )
+				impactTarget.AddForce(impact,ForceMode.VelocityChange);
+		}
+			*/
+	}
+	/*
 	//public property that can be set to toggle between ragdolled and animated character
 	public bool ragdolled
 	{
@@ -211,6 +319,8 @@ public class RagdollHelper : MonoBehaviour {
 				return;
 			}
 		}
+
 	}
+	*/
 	
 }

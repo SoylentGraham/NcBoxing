@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Debug_Input : MonoBehaviour {
 
-	public Transform		mTargetGlove;
+	public InputGlove		mTargetGlove;
 	private Vector3			mBasePosition;
 	private float			mPunchTime = -1;	//	idle when <= 0
 	private float			mPunchSpeed = 4.0f;
@@ -13,7 +13,8 @@ public class Debug_Input : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		mBasePosition = mTargetGlove.localPosition;
+		if ( mTargetGlove )
+			mBasePosition = mTargetGlove.transform.position;
 	}
 
 	void UpdateTransform()
@@ -21,7 +22,11 @@ public class Debug_Input : MonoBehaviour {
 		//	make delta 0...1
 		float Delta = Mathf.Sin (mPunchTime * 180.0f * Mathf.Deg2Rad);
 		Vector3 Offset = Vector3.forward * Delta * mPunchDistance;
-		mTargetGlove.localPosition = mBasePosition + Offset;
+		//	mTargetGlove.localPosition = mBasePosition + Offset;
+		if (mTargetGlove) {
+			var rigid = mTargetGlove.body;
+			rigid.MovePosition (mBasePosition - Offset);
+		}
 	}
 
 	// Update is called once per frame

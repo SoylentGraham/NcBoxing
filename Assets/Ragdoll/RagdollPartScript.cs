@@ -2,43 +2,81 @@
 using System.Collections;
 
 public class RagdollPartScript : MonoBehaviour {
-	//Declare a reference to the main script (of type StairDismount).
-	//This will be set by the code that adds this script to all ragdoll parts
-	public StairDismount mainScript;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	void OnCollisionEnter(Collision collision)
+
+	public RagdollHelper mainScript;
+	private float RagdollTimer = 0;
+
+	public bool IsRagdoll()
 	{
-		//Increase score if this ragdoll part collides with something else
-		//than another ragdoll part with sufficient velocity. 
-		//If the colliding object is another ragdoll part, it will have the same root, hence the inequality check.
-		if (transform.root != collision.transform.root)
-		{			
-			//Check that we are colliding with sufficient velocity
-			if (collision.relativeVelocity.magnitude > 4.0f){
-				//compute score
-				int score=100*Mathf.RoundToInt(collision.relativeVelocity.magnitude);
-				print (gameObject.name + " collided with " + collision.gameObject.name + ", giving score " + score);
-				
-				//increase the main script's score variable (see StairDismount.cs)
-				mainScript.score += score;
-				
-				//Instantiate a text object
-				GameObject scoreText=Instantiate(mainScript.scoreTextTemplate) as GameObject;
-				
-				//Update the text to show the score
-				scoreText.GetComponent<TextMesh>().text=score.ToString();
-				
-				//position the text 1m above this ragdoll part
-				scoreText.transform.position=transform.position;
-				scoreText.transform.Translate(0,1,0);
+		return RagdollTimer > 0;
+	}
+
+	void Update()
+	{
+		if ( RagdollTimer > 0 )
+		{
+			RagdollTimer -= Time.deltaTime;
+			if ( RagdollTimer <= 0 )
+			{
+				mainScript.OnRagdollChange(this);
 			}
 		}
+
+		ApplyRagdoll ();
 	}
-	// Update is called once per frame
-	void Update () {
-	
+
+	void ApplyRagdoll()
+	{
+		bool Enable = IsRagdoll ();
+		Rigidbody rigid = GetComponent<Rigidbody> ();
+
+		//	set ragdoll properties
+		//	gr: sometimes want to lock pos/rotation of some objects
+		bool EnableKinematic = !Enable;
+		if ( !EnableKinematic && rigid.isKinematic )
+		{
+			Debug.Log ("Made " + name + " kinematic");
+			rigid.isKinematic = EnableKinematic;
+			rigid.velocity = Vector3.zero;
+			rigid.angularVelocity = Vector3.zero;
+		}
+		else if ( EnableKinematic && !rigid.isKinematic )
+		{
+			Debug.Log ("Made " + name + "non kinematic");
+			rigid.isKinematic = EnableKinematic;
+			rigid.velocity = Vector3.zero;
+			rigid.angularVelocity = Vector3.zero;
+			//rigid.freezeRotation = true;
+		}
+
+	}
+
+	void Start () {
+		//string UpperOrLower = IsUpperBody () ? "upper" : "lower";
+		//Debug.Log (gameObject.name + " is " + UpperOrLower);
+	}
+
+	void OnCollisionEnter(Collision collision)
+	{
+		//	self intersection
+		if (transform.root == collision.transform.root)
+			return;
+
+		//	did we get hit by a player glove?
+		InputGlove PlayerGlove = collision.transform.GetComponent<InputGlove> ();
+		if (PlayerGlove != null) {
+			RagdollTimer = mainScript.RagdollPartTime;
+			mainScript.OnRagdollChange(this);
+		}
+		/*
+		var Helper = mainScript.GetComponent<RagdollHelper> ();
+		if (Helper.ragdolled) {
+		//	Debug.Log ("Collision during ragdolling");
+			return;
+		}
+
+			PlayerGlove.OnHitRigidBody(gameObject,collision,mainScript);
+		}
+		*/
 	}
 }
