@@ -3,7 +3,9 @@ using System.Collections;
 
 public class InputGlove : MonoBehaviour {
 
+	public Transform	Pow;
 	public Rigidbody	body;
+	public GameObject	Player;
 
 	// Use this for initialization
 	void Start () {
@@ -15,6 +17,30 @@ public class InputGlove : MonoBehaviour {
 	
 	}
 
+
+	void OnCollisionEnter(Collision collision)
+	{
+		var SpringBone = collision.gameObject.GetComponent<SpringBonePart> ();
+		if ( SpringBone && !SpringBone.isSpringing() )
+		{
+			//	make sure it goes in the right direction
+			Vector3 Delta = collision.relativeVelocity.normalized;
+			Vector3 PlayerForward = (Player.transform.position - transform.position).normalized;
+			if ( Vector3.Dot(Delta,PlayerForward) > 0 )
+				Delta *= -1;
+
+			ContactPoint contact = collision.contacts[0];
+			//Vector3 Reflection = Vector3.Reflect( transform.forward, -contact.normal );
+			Vector3 Reflection = Vector3.Cross(-transform.forward, contact.normal );
+
+			Vector3 PushPos = contact.point + ((Reflection + (Vector3.up*4.0f))*4.0f);
+			if ( Pow )
+				Instantiate( Pow, PushPos, Quaternion.identity);
+
+			SpringBone.PushBone( PushPos );
+			Debug.Log("Fist collided with spring bone " + collision.gameObject.name);
+		}
+	}
 	/*
 	public void OnHitRigidBody(GameObject BodyPart,Collision collision,StairDismount Character)
 	{
