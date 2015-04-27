@@ -162,7 +162,7 @@ Material:
       data:
         first:
           name: LumDiffMax
-        second: .400000006
+        second: 1
       data:
         first:
           name: LumDiffDegrade
@@ -174,7 +174,7 @@ Material:
       data:
         first:
           name: NewLumInfluence
-        second: 1
+        second: 3.26999998
     m_Colors:
       data:
         first:

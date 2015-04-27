@@ -10,9 +10,6 @@ public class DebugGui : MonoBehaviour {
 	public Material BackgroundJustScoreMaterial;
 	private RenderTexture		mJustLumTexture;
 	private RenderTexture		mJustScoreTexture;
-	private RenderTexture		mSubtractTexture;
-	public Material				mSubtractMaterial;
-	public Material				mSubtractFillMaterial;
 	public RenderTextureFormat	mTempTextureFormat = RenderTextureFormat.ARGBFloat;
 	public FilterMode			mTempTextureFilterMode = FilterMode.Point;
 
@@ -37,39 +34,9 @@ public class DebugGui : MonoBehaviour {
 		if ( mBackgroundLearner != null )
 			UpdateTempTexture( mBackgroundLearner.mBackgroundTexture, BackgroundJustScoreMaterial, ref mJustScoreTexture );
 		
-		if (mBackgroundLearner != null && mWebcamTextureManager != null) {
-			//Texture LiveTexture = mWebcamTextureManager.mTextureOutput;
-			Texture LiveTexture = mMotionTextureGenerator.mLumTexture;
-			UpdateSubtractTexture (LiveTexture, mBackgroundLearner.mBackgroundTexture, ref mSubtractTexture);
-		}
+	
 	}
 
-	void UpdateSubtractTexture(Texture LiveTexture,Texture BackgroundTexture,ref RenderTexture TempTexture)
-	{
-		if (LiveTexture == null)
-			return;
-		if (BackgroundTexture == null)
-			return;
-		if (mSubtractMaterial == null)
-			return;
-		if (TempTexture == null) {
-			TempTexture = new RenderTexture (LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
-			TempTexture.filterMode = mTempTextureFilterMode;
-		}
-
-		mSubtractMaterial.SetTexture ("LastBackgroundTex",BackgroundTexture);
-		Graphics.Blit (LiveTexture, TempTexture, mSubtractMaterial);
-
-		//	do a fill
-		if (mSubtractFillMaterial != null) {
-			RenderTexture FillTempTexture = RenderTexture.GetTemporary(LiveTexture.width, LiveTexture.height, 0, mTempTextureFormat);
-			FillTempTexture.filterMode = mTempTextureFilterMode;
-			Graphics.Blit( TempTexture, FillTempTexture, mSubtractFillMaterial );
-			Graphics.Blit( FillTempTexture, TempTexture );
-			RenderTexture.ReleaseTemporary( FillTempTexture);
-		}
-
-	}
 
 	void UpdateTempTexture(Texture texture,Material material,ref RenderTexture TempTexture)
 	{
@@ -99,8 +66,8 @@ public class DebugGui : MonoBehaviour {
 
 	void OnGUI()
 	{
-		if ( mWebcamTextureManager != null )
-			DrawTexture( 0, 0, mWebcamTextureManager.mOutputTexture );
+		//if ( mWebcamTextureManager != null )
+		//	DrawTexture( 0, 0, mWebcamTextureManager.mOutputTexture );
  
 		if ( mMotionTextureGenerator != null )
 			DrawTexture( 1, 0, mMotionTextureGenerator.mLumTexture );
@@ -117,7 +84,5 @@ public class DebugGui : MonoBehaviour {
 		if ( mJustScoreTexture != null )
 			DrawTexture( 2, 2, mJustScoreTexture );
 
-		if (mSubtractTexture != null)
-			DrawTexture (0, 2, mSubtractTexture);
 	}
 }

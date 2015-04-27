@@ -3,15 +3,18 @@ using System.Collections;
 
 public class BackgroundLearner : MonoBehaviour {
 
-	public Texture					mInputTexture;
 	public RenderTexture			mLumTexture;
-	public Material					mLumMaterial;
 	public RenderTexture			mBackgroundTexture;
 	private RenderTexture			mLastBackgroundTexture;
 	public Material					mBackgroundLearnerMat;
 	public RenderTextureFormat		mRenderTextureFormat = RenderTextureFormat.ARGBFloat;
 	public FilterMode				mRenderTextureFilterMode = FilterMode.Point;
 	private bool					mInitBackgroundTexture = true;
+
+	[Range(0,1)]
+	public float					LumDiffMax = 0.4f;
+	[Range(0,6)]
+	public float					NewLumInfluence = 1.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -28,20 +31,16 @@ public class BackgroundLearner : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (mInputTexture == null)
-			return;
-
-		//	update lum texture
-		if (mLumMaterial == null || mLumTexture == null)
-			return;
-		mLumTexture.DiscardContents ();
-		Graphics.Blit (mInputTexture, mLumTexture, mLumMaterial);
-
 		if (mBackgroundLearnerMat == null)
 			return;
 
 		if (!mBackgroundTexture)
 			return;
+
+
+		mBackgroundLearnerMat.SetFloat ("LumDiffMax", LumDiffMax);
+		mBackgroundLearnerMat.SetFloat ("NewLumInfluence", NewLumInfluence);
+
 
 		//	first run
 		if (mInitBackgroundTexture) {

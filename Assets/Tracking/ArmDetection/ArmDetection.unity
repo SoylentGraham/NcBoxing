@@ -114,13 +114,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60bfc92cad57540caad19008e2f4c0d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mMotionTextureGenerator: {fileID: 2034646912}
-  mBackgroundTexture: {fileID: 0}
-  mLastBackgroundTexture: {fileID: 0}
+  mLumTexture: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
+  mBackgroundTexture: {fileID: 8400000, guid: 4ebd4caa05d3b4a07ae4bee569b6ee64, type: 2}
   mBackgroundLearnerMat: {fileID: 2100000, guid: f6ffd98812efd46aba6beece1b9dc895,
     type: 2}
   mRenderTextureFormat: 0
   mRenderTextureFilterMode: 0
+  LumDiffMax: .400000006
+  NewLumInfluence: 1
 --- !u!4 &136458883
 Transform:
   m_ObjectHideFlags: 0
@@ -132,7 +133,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
 --- !u!1 &877451874
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,11 +158,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 877451874}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c57bc1ba5be0d4e14850d9cb23eabed5, type: 3}
+  m_Script: {fileID: 11500000, guid: eb3bc887eee79420ca3720c36c62ece9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mTextureOutput: {fileID: 0}
   DeviceName: 
+  mOutputTexture: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
+  mProcessShader: {fileID: 2100000, guid: b2afbd2d569394afe8b42cd2d43df0ac, type: 2}
+  mFlipMaterial: {fileID: 2100000, guid: c86601507cc2a4005ac2088d67967da6, type: 2}
+  mFlip: 0
+  mMirror: 1
+  mDebugViewport:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: .300000012
+    height: .300000012
 --- !u!4 &877451876
 Transform:
   m_ObjectHideFlags: 0
@@ -205,16 +216,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d14e83943c34d5699584c680f621b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mMotionTextureGenerator: {fileID: 2034646912}
+  mMotionTextureGenerator: {fileID: 0}
   mWebcamTextureManager: {fileID: 877451875}
   mBackgroundLearner: {fileID: 136458882}
-  BackgroundJustLumShader: {fileID: 4800000, guid: 75faf2431d45143b6aac969f8e0fd0bd,
-    type: 3}
-  BackgroundJustScoreShader: {fileID: 4800000, guid: 84d9ce86099e147bf96730fa3f590e13,
-    type: 3}
-  mSubtractMaterial: {fileID: 2100000, guid: 2f26b55b7a63a4c4ea984087c663cf9a, type: 2}
-  mSubtractFillMaterial: {fileID: 2100000, guid: da7b1e0609b654ae0b5d96fe7dd42f64,
-    type: 2}
+  BackgroundJustLumMaterial: {fileID: 0}
+  BackgroundJustScoreMaterial: {fileID: 0}
   mTempTextureFormat: 0
   mTempTextureFilterMode: 0
 --- !u!81 &1298924856
@@ -282,51 +288,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!1 &2034646911
+--- !u!1 &1319898811
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   serializedVersion: 4
   m_Component:
-  - 4: {fileID: 2034646913}
-  - 114: {fileID: 2034646912}
+  - 4: {fileID: 1319898813}
+  - 114: {fileID: 1319898812}
   m_Layer: 0
-  m_Name: MotionTextureGenerator
+  m_Name: DrawMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2034646912
+--- !u!114 &1319898812
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2034646911}
+  m_GameObject: {fileID: 1319898811}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e60d0f0169f874971ba191f21ba2811b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1545fd9eb9898427ca3cf4fe88e2267f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mWebcamTextureManager: {fileID: 877451875}
-  mLumTexture: {fileID: 8400000, guid: 31049fa401f72444d8106e679ba55173, type: 2}
-  mLumTextureLast: {fileID: 0}
-  mMotionTexture: {fileID: 8400000, guid: 11dbfd53590cc450896a56c3fc87b533, type: 2}
-  mVideoToLumShader: {fileID: 4800000, guid: 079fd334045934180b4004bf7e54655a, type: 3}
-  LumToMotionMaterial: {fileID: 2100000, guid: b361537f482c14b4281efcb86ae81d13, type: 2}
-  mMotionInitShader: {fileID: 4800000, guid: 5560bda7bc4d1423e8ed3b81a344fedf, type: 3}
-  mMotionFillerMaterial: {fileID: 2100000, guid: 28c5c8f6e36a144c4aadd27966a82b14,
+  mBackgroundLearnerTexture: {fileID: 8400000, guid: 4ebd4caa05d3b4a07ae4bee569b6ee64,
     type: 2}
---- !u!4 &2034646913
+  mInputLum: {fileID: 8400000, guid: 34ac627fe564949179d9d0b52a28c46b, type: 2}
+  mSubtractMaterial: {fileID: 2100000, guid: 2f26b55b7a63a4c4ea984087c663cf9a, type: 2}
+  mSubtractFillMaterial: {fileID: 2100000, guid: da7b1e0609b654ae0b5d96fe7dd42f64,
+    type: 2}
+  mDrawRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  mTempTextureFormat: 11
+  mTempTextureFilterMode: 0
+  BadTruthLumDiff: .699999988
+  GoodTruthLumDiff: .100000001
+  TruthMin: .00999999978
+--- !u!4 &1319898813
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2034646911}
+  m_GameObject: {fileID: 1319898811}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -.0779316425, y: 1.70481563, z: .0658357143}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3

@@ -17,6 +17,7 @@ Temp/
 Obj/
 UnityGenerated/
 Library/
+Blog/*.mov
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #

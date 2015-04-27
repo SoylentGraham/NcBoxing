@@ -132,16 +132,16 @@ Material:
         second: 0
       data:
         first:
-          name: FillRadius
-        second: 4
-      data:
-        first:
           name: TextureWidth
         second: 128
       data:
         first:
           name: TextureHeight
         second: 128
+      data:
+        first:
+          name: FillRadius
+        second: 4
     m_Colors:
       data:
         first:
