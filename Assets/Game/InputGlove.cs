@@ -3,9 +3,9 @@ using System.Collections;
 
 public class InputGlove : MonoBehaviour {
 
-	public Transform	Pow;
-	public Rigidbody	body;
-	public GameObject	Player;
+	public PlayerManager	Player;
+	public Transform		PowPrefab;
+	public Rigidbody		body;
 
 	// Use this for initialization
 	void Start () {
@@ -34,8 +34,8 @@ public class InputGlove : MonoBehaviour {
 			Vector3 Reflection = Vector3.Cross(-transform.forward, contact.normal );
 
 			Vector3 PushPos = contact.point + ((Reflection + (Vector3.up*4.0f))*4.0f);
-			if ( Pow )
-				Instantiate( Pow, PushPos, Quaternion.identity);
+			if ( PowPrefab )
+				Instantiate( PowPrefab, PushPos, Quaternion.identity);
 
 			SpringBone.PushBone( PushPos );
 			Debug.Log("Fist collided with spring bone " + collision.gameObject.name);
