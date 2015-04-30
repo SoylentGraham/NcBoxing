@@ -40,11 +40,12 @@ public class PlayerManager : MonoBehaviour {
 
 	public bool			mAiControlled = false;
 	private float		mHealth = 1.0f;
-	private PlayerState	mState = new PlayerState_Idle(this);
+	private PlayerState	mState;
 
 	// Use this for initialization
 	void Start () {
-	
+		mState = new PlayerState_Idle(this);
+
 	}
 	
 	// Update is called once per frame
@@ -64,8 +65,8 @@ public class PlayerManager : MonoBehaviour {
 	//	returns false to reject a hit
 	bool DoRecieveHit()
 	{
-		if (mState.GetType() != PlayerState_Idle)
-			return false;
+	//	if (mState.GetType() != PlayerState_Idle)
+	//		return false;
 
 		//	take hit
 		mHealth -= 0.25f;
